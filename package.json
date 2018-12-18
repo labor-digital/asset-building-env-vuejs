@@ -1,0 +1,27 @@
+{
+  "name": "@labor/asset-building-env-vuejs",
+  "version": "1.0.0",
+  "description": "The environment required to build vue-js apps",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs.git"
+  },
+  "dependencies": {
+    "eslint-plugin-vue": "^5.0.0",
+    "eslint-plugin-vue-libs": "^3.0.0",
+    "vue-eslint-parser": "^4.0.3",
+    "vue-loader": "^15.4.2",
+    "vue-style-loader": "^4.1.2",
+    "vue-template-compiler": "^2.5.21"
+  },
+  "peerDependencies": {
+    "vue": "^2.5.21"
+  },
+  "author": "Martin Neundorfer @ LABOR",
+  "license": "MIT",
+  "homepage": "https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs#readme"
+}
