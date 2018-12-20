@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+## [1.0.1] - 2018-12-20
+### Added
+- Added a workaround to make sure sass resources get loaded like in the default behaviour
+- Added sass loader file extension helper 
+
+### Changed
+- Switched style loaders back to the default variants, thanks to better plugin integration
+
 ## [1.0.0] - 2018-12-18
 Initial commit
 
