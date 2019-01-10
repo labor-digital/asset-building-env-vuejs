@@ -3,15 +3,56 @@
  * For LABOR.digital
  */
 const path = require("path");
+const EsLintConfig_Typescript = require("@labor/asset-building/src/LintConfig/EsLintConfig_Typescript");
+
 module.exports = class VueJsEnvPlugin {
 	getEnvironmentHandlers(handlers){
 		handlers.set("vuejs", path.resolve(__dirname, "..", "VueJs.js"));
 	}
 
-	filterEslintOptions(options, context){
-		if(context.environment !== "vuejs") return options;
-		delete options.parser;
-		options.extends = "vue";
+	afterComponent(context, componentKey){
+		if(context.environment !== "vuejs") return context;
+		if(componentKey === "EsLint") this._injectVueEsLint(context);
+	}
+
+	_injectVueEsLint(context){
+
+		// Extend typescript default config
+		const lintConfig = new EsLintConfig_Typescript(context);
+		lintConfig.parser = "vue-eslint-parser";
+		lintConfig.extends = [
+			"eslint:recommended",
+			"plugin:vue/recommended",
+			"typescript"
+		];
+		lintConfig.parserOptions = {
+			parser: "typescript-eslint-parser"
+		};
+
+		// Prepare exclude pattern
+		const baseExcludePattern = /node_modules(?![\\/\\\\]@labor[\\/\\\\])/;
+		const excludePattern = context.callPluginMethod("filterExcludePattern", [
+			context.builderVersion === 1 ? baseExcludePattern : undefined,
+			"esLint", baseExcludePattern, context
+		]);
+
+		// Inject new lint loader
+		context.webpackConfig.module.rules.push(
+			context.callPluginMethod("filterLoaderConfig", [
+				{
+					test: context.callPluginMethod("filterLoaderTest", [/\.vue$/, "vueLintLoader", context]),
+					exclude: excludePattern === null ? undefined : excludePattern,
+					enforce: "pre",
+					use: [
+						{
+							loader: "eslint-loader",
+							options: context.callPluginMethod("filterEslintOptions", [
+								lintConfig, context, "vue"])
+						}
+					]
+				},
+				"vueLintLoader", context
+			]));
 	}
 
 	filterExcludePattern(pattern, type, basePattern, context){

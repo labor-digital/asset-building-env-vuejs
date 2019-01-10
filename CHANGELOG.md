@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+## [1.0.2] - 2019-01-10
+### Fixed
+- Fixed an issue with the eslint implementation for vue files
+
 ## [1.0.1] - 2018-12-20
 ### Added
 - Added a workaround to make sure sass resources get loaded like in the default behaviour
