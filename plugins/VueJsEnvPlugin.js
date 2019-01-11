@@ -25,9 +25,8 @@ module.exports = class VueJsEnvPlugin {
 			"plugin:vue/recommended",
 			"typescript"
 		];
-		lintConfig.parserOptions = {
-			parser: "typescript-eslint-parser"
-		};
+		if(typeof lintConfig.parserOptions === "undefined") lintConfig.parserOptions = {};
+		lintConfig.parserOptions.parser = "typescript-eslint-parser";
 
 		// Prepare exclude pattern
 		const baseExcludePattern = /node_modules(?![\\/\\\\]@labor[\\/\\\\])/;
