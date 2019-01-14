@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+## [1.0.4] - 2019-01-14
+### Changed
+- Added vue as dependency so we can be sure we always have the same version of vue and the template compiler
+- Updated dependencies
+
 ## [1.0.3] - 2019-01-11
 ### Fixed
 - Fixed an issue where the eslint parserOptions were overwritten by our config
