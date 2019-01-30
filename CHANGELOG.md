@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+## [1.0.5] - 2019-01-30
+### Changed
+- Updated dependencies to their latest versions
+
 ## [1.0.4] - 2019-01-14
 ### Changed
 - Added vue as dependency so we can be sure we always have the same version of vue and the template compiler
