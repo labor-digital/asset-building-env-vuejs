@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+## [1.0.8] - 2019-02-06
+### Changed
+- Converted all dependency versions to absolute numbers
+
 ## [1.0.7] - 2019-02-06
 ### Removed
 - Removed no longer needed dependencies
