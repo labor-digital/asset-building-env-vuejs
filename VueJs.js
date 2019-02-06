@@ -52,8 +52,5 @@ module.exports = class VueJs {
 
 		// Add vue plugin
 		context.webpackConfig.plugins.push(new VueLoaderPlugin());
-
-		// Disalbe component loader
-		context.currentAppConfig.componentLoader = false;
 	}
 };

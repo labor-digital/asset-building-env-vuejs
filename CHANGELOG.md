@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+## [1.0.6] - 2019-02-06
+### Removed
+- Removed some no longer required Hooks for customSassLoader and esLint
+
 ## [1.0.5] - 2019-01-30
 ### Changed
 - Updated dependencies to their latest versions
