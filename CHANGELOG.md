@@ -1,5 +1,15 @@
-# Changelog
-All notable changes to this project will be documented in this file.
+# Change Log
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+# [1.1.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v1.1.0%0Dv1.0.8#diff) (2019-06-13)
+
+
+### Features
+
+* update dependencies and add pipeline support ([8935ed4](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/8935ed4))
+
+
 
 ## [1.0.8] - 2019-02-06
 ### Changed
