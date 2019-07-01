@@ -11,13 +11,13 @@
     "url": "git+ssh://git@bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs.git"
   },
   "dependencies": {
-    "@types/vue": "2.0.0",
     "vue": "2.6.10",
     "vue-loader": "15.7.0",
     "vue-property-decorator": "8.1.1",
     "vue-router": "3.0.6",
     "vue-style-loader": "4.1.2",
-    "vue-template-compiler": "2.6.10"
+    "vue-template-compiler": "2.6.10",
+    "@types/vue": "2.0.0"
   },
   "peerDependencies": {},
   "author": "Martin Neundorfer @ LABOR",
