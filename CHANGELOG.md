@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [1.2.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v1.2.0%0Dv1.1.1#diff) (2019-08-01)
+
+
+### Features
+
+* add useCssExtractPlugin toggle + add support for jsx/tsx templates ([c5ee2d6](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/c5ee2d6))
+* update dependencies ([e1023ad](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/e1023ad))
+
+
+
 ## [1.1.1](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v1.1.1%0Dv1.1.0#diff) (2019-07-01)
 
 
