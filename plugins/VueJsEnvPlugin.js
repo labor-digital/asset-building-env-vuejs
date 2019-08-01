@@ -19,6 +19,9 @@ module.exports = class VueJsEnvPlugin {
 		// Only inject the vue loader in a development context
 		if(context.isProd) return config;
 
+		// Skip if the package requires us to use the css extract plugin
+		if(context.currentAppConfig.useCssExtractPlugin === true) return config;
+
 		// Rewrite sass loader
 		if(type === "sassLoader"){
 			config.use.forEach((v, k) => {
@@ -28,6 +31,7 @@ module.exports = class VueJsEnvPlugin {
 				// Inject vue style loader
 				if(v.loader.match(/mini-css-extract-plugin/))
 					config.use[k] = "vue-style-loader";
+
 			});
 		}
 
@@ -42,5 +46,9 @@ module.exports = class VueJsEnvPlugin {
 					config.use[k] = "vue-style-loader";
 			});
 		}
+	}
+
+	filterTypescriptOptions(config){
+		config.compilerOptions.jsxFactory = "h";
 	}
 };
