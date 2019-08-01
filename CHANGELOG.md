@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.1](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v1.1.1%0Dv1.1.0#diff) (2019-07-01)
+
+
+### Bug Fixes
+
+* try to fix wrong vue versions in projects ([09f50e5](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/09f50e5))
+
+
+
 # [1.1.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v1.1.0%0Dv1.0.8#diff) (2019-06-13)
 
 
