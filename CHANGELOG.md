@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [1.3.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v1.3.0%0Dv1.2.0#diff) (2019-09-25)
+
+
+### Features
+
+* update dependencies ([a30979b](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/a30979b))
+
+
+
 # [1.2.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v1.2.0%0Dv1.1.1#diff) (2019-08-01)
 
 
