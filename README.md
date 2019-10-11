@@ -30,14 +30,16 @@ You should also consider installing the asset-building-dev-server package to get
 By default the "mimiCssExtract" plugin will be disabled in order to allow hot reloading for the vue components. 
 If you are using a legacy project in combination with vue, you may set this to FALSE. In that case, all css files will be dumped, even if in development.
 
-```json
-labor: {
-	"apps": [
-		{
-			...
-			"useCssExtractPlugin": false
-			...
-		}
-	]
+```
+{
+    "labor": {
+        "apps": [
+            {
+                ...
+                "useCssExtractPlugin": false,
+                ...
+            }
+        ]
+    }
 }
 ```
