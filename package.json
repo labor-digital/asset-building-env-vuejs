@@ -1,34 +1,34 @@
 {
-  "name": "@labor/asset-building-env-vuejs",
-  "version": "1.3.0",
-  "description": "The environment required to build vue-js apps",
-  "main": "./dist/VueJs.js",
-  "scripts": {
-    "build": "node flushLib.js && tsc",
-    "watch": "node flushLib.js && tsc --watch",
-    "link": "npm link @labor/asset-building"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs.git"
-  },
-  "dependencies": {
-    "@types/vue": "2.0.0",
-    "vue": "2.6.10",
-    "vue-loader": "15.7.1",
-    "vue-property-decorator": "8.2.2",
-    "vue-router": "3.1.3",
-    "vue-server-renderer": "^2.6.10",
-    "vue-style-loader": "4.1.2",
-    "vue-template-compiler": "2.6.10",
-    "webpack-node-externals": "^1.7.2"
-  },
-  "peerDependencies": {},
-  "author": "Martin Neundorfer @ LABOR",
-  "license": "MIT",
-  "homepage": "https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs#readme",
-  "devDependencies": {
-    "@labor/asset-building": "3.13.0",
-    "typescript": "3.6.3"
-  }
+	"name": "@labor/asset-building-env-vuejs",
+	"version": "1.3.0",
+	"description": "The environment required to build vue-js apps",
+	"main": "./dist/VueJs.js",
+	"scripts": {
+		"build": "node flushLib.js && tsc",
+		"watch": "node flushLib.js && tsc --watch",
+		"link": "npm link @labor/asset-building"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+ssh://git@bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs.git"
+	},
+	"dependencies": {
+		"@types/vue": "2.0.0",
+		"vue": "2.6.10",
+		"vue-loader": "15.7.1",
+		"vue-property-decorator": "8.2.2",
+		"vue-router": "3.1.3",
+		"vue-server-renderer": "^2.6.10",
+		"vue-style-loader": "4.1.2",
+		"vue-template-compiler": "2.6.10",
+		"webpack-node-externals": "^1.7.2"
+	},
+	"peerDependencies": {},
+	"author": "Martin Neundorfer @ LABOR",
+	"license": "MIT",
+	"homepage": "https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs#readme",
+	"devDependencies": {
+		"@labor/asset-building": "4.0.2",
+		"typescript": "3.6.4"
+	}
 }
