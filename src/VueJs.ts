@@ -3,9 +3,9 @@ import {AssetBuilderEventList} from "@labor/asset-building/dist/AssetBuilderEven
 import merge from "webpack-merge";
 import {VueLoaderPlugin} from "vue-loader";
 import {AssetBuilderConfiguratorIdentifiers} from "@labor/asset-building/dist/AssetBuilderConfiguratorIdentifiers";
-import {FileHelpers} from "@labor/asset-building/dist/Helpers/FileHelpers";
 import {AppDefinitionInterface} from "@labor/asset-building/dist/Interfaces/AppDefinitionInterface";
 import {ProcessManager} from "@labor/asset-building/dist/Core/ProcessManager";
+import * as path from "path";
 
 export default function (context: WorkerContext, scope: string) {
 	if (scope !== "app") throw new Error("The vue extension can not be defined on a global scope!");
@@ -52,8 +52,8 @@ export default function (context: WorkerContext, scope: string) {
 		context.webpackConfig.plugins.push(new VueLoaderPlugin());
 
 		// Add server side rendering configuration if required
-		if (context.app.useSsr) {
-			if (context.app.ssrWorker === "manifest") {
+		if (context.app.useSsr || global.EXPRESS_VUE_SSR_MODE === true) {
+			if (context.app.ssrWorker === "server") {
 				// Manifest definition
 				context.webpackConfig = merge(context.webpackConfig, {
 					// This allows webpack to handle dynamic imports in a Node-appropriate
@@ -77,42 +77,20 @@ export default function (context: WorkerContext, scope: string) {
 						// do not externalize dependencies that need to be processed by webpack.
 						// you can add more file types here e.g. raw *.vue files
 						// you should also whitelist deps that modifies `global` (e.g. polyfills)
-						whitelist: /\.css$|node_modules/
+						whitelist: /\.css$/
 					})),
-					// context.app.useSsrServerExternals ? ((require("webpack-node-externals"))({
-					// 		// do not externalize dependencies that need to be processed by webpack.
-					// 		// you can add more file types here e.g. raw *.vue files
-					// 		// you should also whitelist deps that modifies `global` (e.g. polyfills)
-					// 		whitelist: /\.css$/
-					// 	})) :
-					// 	// Use impossible dummy lookup to keep the server plugin quiet...
-					// 	{
-					// 		fs: "require('fs')",
-					// 		path: "require('path')"
-					// 	},
 
 					// This is the plugin that turns the entire output of the server build
 					// into a single JSON file. The default file name will be
 					// `vue-ssr-server-bundle.json`
 					plugins: [
-						new (require("vue-server-renderer/server-plugin"))()
+						new (require("vue-server-renderer/server-plugin"))(),
+						// Define some useful environment variables
+						new (require("webpack")).DefinePlugin({
+							"process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV || context.isProd ? "production" : "development"),
+							"process.env.VUE_ENV": "\"server\""
+						}),
 					]
-				});
-			} else if (context.app.ssrWorker === "entry") {
-				// Server entry definition
-				context.webpackConfig = merge(context.webpackConfig, {
-					// This allows webpack to handle dynamic imports in a Node-appropriate
-					// fashion, and also tells `vue-loader` to emit server-oriented code when
-					// compiling Vue components.
-					target: "node",
-
-					// For bundle renderer source map support
-					devtool: "source-map",
-
-					// This tells the server bundle to use Node-style exports
-					output: {
-						libraryTarget: "this"
-					}
 				});
 			} else {
 				// Client definition
@@ -127,7 +105,12 @@ export default function (context: WorkerContext, scope: string) {
 						}),
 						// This plugins generates `vue-ssr-client-manifest.json` in the
 						// output directory.
-						new (require("vue-server-renderer/client-plugin"))()
+						new (require("vue-server-renderer/client-plugin"))(),
+						// Define some useful environment variables
+						new (require("webpack")).DefinePlugin({
+							"process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV || context.isProd ? "production" : "development"),
+							"process.env.VUE_ENV": "\"client\""
+						}),
 					]
 				});
 			}
@@ -137,6 +120,29 @@ export default function (context: WorkerContext, scope: string) {
 	// Set jsx factory in typescript
 	context.eventEmitter.bind(AssetBuilderEventList.FILTER_TYPESCRIPT_OPTIONS, (e) => {
 		e.args.options.compilerOptions.jsxFactory = "h";
+	});
+
+	// Listen for the server bundle compiler
+	context.eventEmitter.bind(AssetBuilderEventList.WEBPACK_COMPILER, e => {
+		const context: WorkerContext = e.args.context;
+
+		// Ignore if we are not running in express mode
+		if (!context.parentContext.isExpress) return;
+		if (context.app.ssrWorker !== "server" || typeof context.webpackConfig.output.path !== "string") return;
+
+		// Set the compiler to the memory fs
+		const MFS = require("memory-fs");
+		const mfs = new MFS();
+		e.args.webpackCompiler.compiler.outputFileSystem = mfs;
+
+		// Register the on done hook
+		e.args.webpackCompiler.compiler.hooks.done.tap("ExpressSsrServerPlugin", () => {
+			const bundlePath = path.join(context.webpackConfig.output.path, "vue-ssr-server-bundle.json");
+			process.send({
+				VUE_SSR_BUNDLE: mfs.existsSync(bundlePath) ?
+					JSON.parse(mfs.readFileSync(bundlePath, "utf-8")) : null
+			});
+		});
 	});
 
 	// Inject our own app schema property
@@ -153,88 +159,66 @@ export default function (context: WorkerContext, scope: string) {
 			type: "bool",
 			default: false
 		};
-		e.args.schema.useAutoSsrServer = {
-			type: "bool",
-			default: true
-		};
 		e.args.schema.ssrWorker = {
 			type: ["undefined", "string"],
 			default: undefined
 		};
 	});
 
+	// Inject custom template if we are using vue server side rendering
+	context.eventEmitter.bind(AssetBuilderEventList.FILTER_HTML_PLUGIN_TEMPLATE, e => {
+		if (context.app.useSsr !== true && global.EXPRESS_VUE_SSR_MODE !== true) return;
+		e.args.template.template = path.join(__dirname, "../indexTemplate/index.ejs");
+		e.args.template.minify = false;
+		e.args.template.inject = false;
+	});
+
 	// Check if we have to spawn the SSR renderers
 	context.eventEmitter.bind(AssetBuilderEventList.AFTER_WORKER_INIT_DONE, (e) => {
 		const context: WorkerContext = e.args.context;
-		if (context.app.useSsr !== true) return;
-		if (context.app.useAutoSsrServer !== true) return;
+
+		// Ignore if the context is not correct
+		if (context.app.useSsr !== true && global.EXPRESS_VUE_SSR_MODE !== true) return;
+		if (typeof context.app.ssrWorker !== "undefined") return;
+		if (context.parentContext.isExpress && context.parentContext.isProd) return;
 
 		// Create our process manager
 		const processManager = new ProcessManager(context.eventEmitter);
 
-		// Create the definition for the manifest worker
-		// const serverManifestDefinition: AppDefinitionInterface = {
-		// 	appName: context.app.appName + " - Server Renderer",
-		// 	id: context.app.id + 1000,
-		// 	entry: entryFile,
-		// 	output: outputFile,
-		// 	useSsr: true,
-		// 	ssrWorker: "manifest",
-		// 	useAutoSsrServer: false,
-		// 	polyfills: false,
-		// 	keepOutputDirectory: true,
-		// 	disableGitAdd: true,
-		// 	warningsIgnorePattern: "the request of a dependency is an expression",
-		// 	extensions: [
-		// 		"@labor/asset-building-env-vuejs"
-		// 	]
-		// };
-		const serverManifestDefinition: AppDefinitionInterface = JSON.parse(JSON.stringify(context.app));
-		serverManifestDefinition.appName += " - Server Manifest Generator";
-		serverManifestDefinition.id += 1000;
-		serverManifestDefinition.useAutoSsrServer = false;
-		serverManifestDefinition.minChunkSize = 999999999;
-		serverManifestDefinition.polyfills = false;
-		serverManifestDefinition.keepOutputDirectory = true;
-		serverManifestDefinition.disableGitAdd = true;
-		serverManifestDefinition.ssrWorker = "manifest";
+		const serverAppConfig: AppDefinitionInterface = JSON.parse(JSON.stringify(context.app));
+		serverAppConfig.appName += " - Server Generator";
+		serverAppConfig.id += 1000;
+		serverAppConfig.minChunkSize = 999999999;
+		serverAppConfig.polyfills = false;
+		serverAppConfig.keepOutputDirectory = true;
+		serverAppConfig.disableGitAdd = true;
+		serverAppConfig.verboseResult = true;
+		serverAppConfig.useSsr = true;
+		serverAppConfig.ssrWorker = "server";
 
-		// Create the server manifest worker
-		processManager.startSingleWorkerProcess(context.parentContext, serverManifestDefinition)
-			.catch((err) => {
-				if (typeof err === "string") throw new Error(err);
-				throw err;
+		// Add our callback when the process finished
+		const serverProcessListener = (e) => {
+			e.args.process.on("message", message => {
+				if (typeof message.VUE_SSR_BUNDLE === "undefined") return;
+				if (typeof global.EXPRESS_VUE_SSR_UPDATE_RENDERER === "undefined") return;
+				global.EXPRESS_VUE_SSR_UPDATE_RENDERER("bundle", message.VUE_SSR_BUNDLE);
 			});
-
-		// Rewrite the output file
-		let outputFile = context.app.output;
-		const outputExtension = FileHelpers.getFileExtension(outputFile);
-		outputFile = FileHelpers.getFileWithoutExtension(outputFile) + "-server." + outputExtension;
-
-		// Create the definition for the server entry worker
-		const serverEntryDefinition: AppDefinitionInterface = {
-			appName: context.app.appName + " - Server Entry",
-			id: context.app.id + 2000,
-			entry: require.resolve("./ServerBundle.js"),
-			output: outputFile,
-			useSsr: true,
-			ssrWorker: "entry",
-			useAutoSsrServer: false,
-			polyfills: false,
-			keepOutputDirectory: true,
-			disableGitAdd: true,
-			warningsIgnorePattern: "the request of a dependency is an expression",
-			extensions: [
-				"@labor/asset-building-env-vuejs"
-			]
 		};
+		context.eventEmitter.bind(AssetBuilderEventList.PROCESS_CREATED, serverProcessListener);
 
-		// Create the server entry worker
-		processManager.startSingleWorkerProcess(context.parentContext, serverEntryDefinition)
+		// Make sure to set the correct mode
+		const modeBackup = context.parentContext.mode;
+		context.parentContext.mode = context.parentContext.isProd ? "build" : "watch";
+
+		// Create the server worker
+		processManager.startSingleWorkerProcess(context.parentContext, serverAppConfig)
 			.catch((err) => {
 				if (typeof err === "string") throw new Error(err);
 				throw err;
 			});
+
+		context.eventEmitter.unbind(AssetBuilderEventList.PROCESS_CREATED, serverProcessListener);
+		context.parentContext.mode = modeBackup;
 
 	});
 

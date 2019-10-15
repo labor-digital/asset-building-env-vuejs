@@ -1,0 +1,143 @@
+import ExpressContext from "@labor/asset-building/dist/Express/ExpressContext";
+import fs from "fs";
+import * as path from "path";
+import {createBundleRenderer} from "vue-server-renderer";
+import LRU from "lru-cache";
+import MemoryFileSystem = require("memory-fs");
+
+declare global {
+	namespace NodeJS {
+		interface Global {
+			EXPRESS_VUE_SSR_MODE: boolean
+			EXPRESS_VUE_SSR_UPDATE_RENDERER: Function
+		}
+	}
+}
+
+/**
+ * Marks this process as using the vue ssr plugin
+ */
+global.EXPRESS_VUE_SSR_MODE = true;
+
+/**
+ * Finds the absolute output directory for the given express context
+ * @param context
+ */
+function getOutputPath(context: ExpressContext): Promise<string> {
+	if (!context.isProd) return Promise.resolve(context.parentContext.webpackConfig.output.path);
+	return context.factory.getWebpackConfig(context.appId).then(config => config.output.path);
+}
+
+/**
+ * Internal helper to apply the vue-meta properties into our template
+ * @see https://vue-meta.nuxtjs.org/guide/ssr.html#inject-metadata-into-page-stream
+ * @param vueContext
+ * @param chunk
+ */
+function applyMetaData(vueContext, chunk: string): string {
+	if (typeof vueContext.meta === "undefined") return chunk;
+	console.log(vueContext.meta);
+
+	return chunk;
+}
+
+let metaDataInjectCache = null;
+
+module.exports = function expressSsrPlugin(context: ExpressContext): Promise<ExpressContext> {
+
+	function createRenderer(bundle, template, clientManifest?) {
+		return createBundleRenderer(bundle, {
+			template,
+			clientManifest,
+			cache: new LRU({
+				max: 1000,
+				maxAge: 1000 * 60 * 15
+			})
+		});
+	}
+
+	return getOutputPath(context).then(outputPath => {
+		let renderer = null;
+		if (context.isProd) {
+			const serverBundle = require(path.resolve(outputPath, "./vue-ssr-server-bundle.json"));
+			const clientManifest = require(path.resolve(outputPath, "./vue-ssr-client-manifest.json"));
+
+			const template = fs.readFileSync(path.resolve(outputPath, "./index.html"), "utf-8");
+			renderer = createRenderer(serverBundle, template, clientManifest);
+		} else {
+
+			let template = null;
+			let bundle = null;
+			let clientManifest = undefined;
+
+			// Register global render generation
+			global.EXPRESS_VUE_SSR_UPDATE_RENDERER = (type: "template" | "bundle" | "clientManifest", value: string) => {
+				try {
+					if (type === "template") {
+						template = value;
+						if (bundle !== null) renderer = createRenderer(bundle, template, clientManifest);
+					} else if (type === "bundle") {
+						bundle = value;
+						if (template !== null) renderer = createRenderer(bundle, template, clientManifest);
+					} else if (type === "clientManifest") {
+						clientManifest = JSON.parse(value);
+					}
+				} catch (e) {
+					console.log(e);
+					process.exit(1);
+				}
+			};
+
+			// Register callback when the compiler is done
+			context.compiler.hooks.done.tap("ExpressSsrPlugin", () => {
+				const mfs: MemoryFileSystem = context.compiler.outputFileSystem as any;
+
+				// Update the client manifest
+				const clientManifestPath = path.join(outputPath, "vue-ssr-client-manifest.json");
+				if (mfs.existsSync(clientManifestPath)) global.EXPRESS_VUE_SSR_UPDATE_RENDERER("clientManifest", mfs.readFileSync(clientManifestPath).toString("utf-8"));
+
+				// Update the template
+				const indexFilePath = path.join(outputPath, "index.html");
+				if (mfs.existsSync(indexFilePath)) global.EXPRESS_VUE_SSR_UPDATE_RENDERER("template", mfs.readFileSync(indexFilePath).toString("utf-8"));
+			});
+		}
+
+		// Serve our generated assets
+		context.expressApp.use(context.compiler.options.output.publicPath.replace(/^\./, ""),
+			require("express").static(outputPath));
+
+		// Register the catch all express route
+		context.expressApp.get("*", (req, res) => {
+			if (!renderer) return res.end("waiting for compilation... refresh in a moment.");
+			const s = Date.now();
+			res.setHeader("Content-Type", "text/html");
+
+			const errorHandler = err => {
+				if (err && err.code === 404) {
+					res.status(404).end("404 | Page Not Found");
+				} else {
+					// Render Error Page or Redirect
+					res.status(500).end("500 | Internal Server Error");
+					console.error(`error during render : ${req.url}`);
+					console.error(err);
+				}
+			};
+
+			// Create the rendering stream
+			const vueContext = {url: req.url};
+			const stream = renderer.renderToStream(vueContext);
+
+			// Apply meta data by the "vue-meta" plugin
+			stream.on("data", (chunk: Buffer) => {
+				res.write(applyMetaData(vueContext, chunk.toString("utf-8")));
+			});
+
+			// Handle errors
+			stream.on("error", errorHandler).on("end", () => console.log(`whole request: ${Date.now() - s}ms`));
+		});
+
+		return Promise.resolve(context);
+	});
+
+
+};
