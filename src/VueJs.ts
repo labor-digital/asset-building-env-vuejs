@@ -177,8 +177,13 @@ export default function (context: WorkerContext, scope: string) {
 	context.eventEmitter.bind(AssetBuilderEventList.AFTER_WORKER_INIT_DONE, (e) => {
 		const context: WorkerContext = e.args.context;
 
+		// Make sure the html template is enabled in ssr mode
+		const isSsr = context.app.useSsr === true || global.EXPRESS_VUE_SSR_MODE === true;
+		if (!isSsr) return;
+		if (context.app.htmlTemplate === null || typeof context.app.htmlTemplate === "undefined")
+			context.app.htmlTemplate = true;
+
 		// Ignore if the context is not correct
-		if (context.app.useSsr !== true && global.EXPRESS_VUE_SSR_MODE !== true) return;
 		if (typeof context.app.ssrWorker !== "undefined") return;
 		if (context.parentContext.isExpress && context.parentContext.isProd) return;
 

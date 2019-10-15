@@ -94,11 +94,13 @@ module.exports = function expressSsrPlugin(context: ExpressContext): Promise<Exp
 
 				// Update the client manifest
 				const clientManifestPath = path.join(outputPath, "vue-ssr-client-manifest.json");
-				if (mfs.existsSync(clientManifestPath)) global.EXPRESS_VUE_SSR_UPDATE_RENDERER("clientManifest", mfs.readFileSync(clientManifestPath).toString("utf-8"));
+				if (mfs.existsSync(clientManifestPath))
+					global.EXPRESS_VUE_SSR_UPDATE_RENDERER("clientManifest", mfs.readFileSync(clientManifestPath).toString("utf-8"));
 
 				// Update the template
 				const indexFilePath = path.join(outputPath, "index.html");
-				if (mfs.existsSync(indexFilePath)) global.EXPRESS_VUE_SSR_UPDATE_RENDERER("template", mfs.readFileSync(indexFilePath).toString("utf-8"));
+				if (mfs.existsSync(indexFilePath))
+					global.EXPRESS_VUE_SSR_UPDATE_RENDERER("template", mfs.readFileSync(indexFilePath).toString("utf-8"));
 			});
 		}
 
