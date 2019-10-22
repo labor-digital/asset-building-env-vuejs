@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.1.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.1.0%0Dv2.0.0#diff) (2019-10-15)
+
+
+### Features
+
+* finalize SSR implementation using the latest asset-builder version ([a74b305](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/a74b305))
+
+
+
 # [2.0.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.0.0%0Dv1.3.0#diff) (2019-10-11)
 
 
