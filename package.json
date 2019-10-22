@@ -1,6 +1,6 @@
 {
 	"name": "@labor/asset-building-env-vuejs",
-	"version": "2.1.0",
+	"version": "2.2.0",
 	"description": "The environment required to build vue-js apps",
 	"main": "./dist/VueJs.js",
 	"scripts": {
