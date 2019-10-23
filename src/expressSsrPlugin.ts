@@ -29,6 +29,11 @@ function getOutputPath(context: ExpressContext): Promise<string> {
 }
 
 /**
+ * Holds the prepared metadata to replace in the stream chunks
+ */
+let preparedMetaData: null | Array<{ find: RegExp, replace: string }> = null;
+
+/**
  * Internal helper to apply the vue-meta properties into our template
  * @see https://vue-meta.nuxtjs.org/guide/ssr.html#inject-metadata-into-page-stream
  * @param vueContext
@@ -36,8 +41,50 @@ function getOutputPath(context: ExpressContext): Promise<string> {
  */
 function applyMetaData(vueContext, chunk: string): string {
 	if (typeof vueContext.meta === "undefined") return chunk;
-	console.log(vueContext.meta);
 
+	// Prepare the metadata if required
+	if (preparedMetaData === null) {
+		const {
+			title, htmlAttrs, headAttrs, bodyAttrs, link,
+			style, script, noscript, meta
+		} = vueContext.meta.inject();
+		preparedMetaData = [];
+
+		// Build the placeholders
+		const nl = "\r\n";
+		preparedMetaData.push({
+			find: /data-vue-template-html/g,
+			replace: "data-vue-meta-server-rendered " + htmlAttrs.text()
+		});
+		preparedMetaData.push({
+			find: /data-vue-template-head/g,
+			replace: headAttrs.text()
+		});
+		preparedMetaData.push({
+			find: /<!--vue-head-outlet-->/g,
+			replace: meta.text() + nl + title.text() + nl + link.text() + nl
+				+ style.text() + nl + script.text() + nl + noscript.text()
+		});
+		preparedMetaData.push({
+			find: /data-vue-template-body/g,
+			replace: bodyAttrs.text()
+		});
+		preparedMetaData.push({
+			find: /<!--vue-pbody-outlet-->/g,
+			replace: style.text({pbody: true}) + nl + script.text({pbody: true}) + noscript.text({pbody: true})
+		});
+		preparedMetaData.push({
+			find: /<!--vue-body-outlet-->/g,
+			replace: style.text({body: true}) + nl + script.text({body: true}) + noscript.text({body: true})
+		});
+	}
+
+	// Apply the metadata
+	preparedMetaData.forEach(placeholder => {
+		chunk = chunk.replace(placeholder.find, placeholder.replace);
+	});
+
+	// Done
 	return chunk;
 }
 
@@ -55,7 +102,7 @@ module.exports = function expressSsrPlugin(context: ExpressContext): Promise<Exp
 			template,
 			clientManifest,
 			cache: new LRU({
-				max: 1000,
+				max: process.env.NODE_ENV === "development" ? 1 : 1000,
 				maxAge: 1000 * 60 * 15
 			})
 		});
