@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.3.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.3.0%0Dv2.2.0#diff) (2019-10-23)
+
+
+### Features
+
+* add vue-meta support for the ssr renderer ([fad58f7](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/fad58f7))
+
+
+
 # [2.2.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.2.0%0Dv2.1.0#diff) (2019-10-22)
 
 
