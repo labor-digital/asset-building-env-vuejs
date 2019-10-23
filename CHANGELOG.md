@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.2.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.2.0%0Dv2.1.0#diff) (2019-10-22)
+
+
+### Features
+
+* automatically enable htmlTemplate if SSR mode is active ([0590fd4](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/0590fd4))
+* implement status code bridge to the vue rendering package ([6465ac0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/6465ac0))
+
+
+
 # [2.1.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.1.0%0Dv2.0.0#diff) (2019-10-15)
 
 
