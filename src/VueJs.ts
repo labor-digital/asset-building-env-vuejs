@@ -108,7 +108,7 @@ export default function (context: WorkerContext, scope: string) {
 						new (require("vue-server-renderer/client-plugin"))(),
 						// Define some useful environment variables
 						new (require("webpack")).DefinePlugin({
-							"process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV || context.isProd ? "production" : "development"),
+							"process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV === "production" || context.isProd ? "production" : "development"),
 							"process.env.VUE_ENV": "\"client\""
 						}),
 					]
