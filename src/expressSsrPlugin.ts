@@ -3,6 +3,7 @@ import fs from "fs";
 import * as path from "path";
 import {createBundleRenderer} from "vue-server-renderer";
 import LRU from "lru-cache";
+import {Configuration} from "webpack";
 import MemoryFileSystem = require("memory-fs");
 
 declare global {
@@ -20,12 +21,12 @@ declare global {
 global.EXPRESS_VUE_SSR_MODE = true;
 
 /**
- * Finds the absolute output directory for the given express context
+ * Finds the webpack config object we need for our internal logic
  * @param context
  */
-function getOutputPath(context: ExpressContext): Promise<string> {
-	if (!context.isProd) return Promise.resolve(context.parentContext.webpackConfig.output.path);
-	return context.factory.getWebpackConfig(context.appId).then(config => config.output.path);
+function getWebpackConfig(context: ExpressContext): Promise<Configuration> {
+	if (!context.isProd) return Promise.resolve(context.parentContext.webpackConfig);
+	return context.factory.getWebpackConfig(context.appId);
 }
 
 /**
@@ -108,14 +109,14 @@ module.exports = function expressSsrPlugin(context: ExpressContext): Promise<Exp
 		});
 	}
 
-	return getOutputPath(context)
-		.then(outputPath => {
+	return getWebpackConfig(context)
+		.then(webpackConfig => {
 			let renderer = null;
 			if (context.isProd) {
-				const serverBundle = require(path.resolve(outputPath, "./vue-ssr-server-bundle.json"));
-				const clientManifest = require(path.resolve(outputPath, "./vue-ssr-client-manifest.json"));
+				const serverBundle = require(path.resolve(webpackConfig.output.path, "./vue-ssr-server-bundle.json"));
+				const clientManifest = require(path.resolve(webpackConfig.output.path, "./vue-ssr-client-manifest.json"));
 
-				const template = fs.readFileSync(path.resolve(outputPath, "./index.html"), "utf-8");
+				const template = fs.readFileSync(path.resolve(webpackConfig.output.path, "./index.html"), "utf-8");
 				renderer = createRenderer(serverBundle, template, clientManifest);
 			} else {
 
@@ -146,20 +147,20 @@ module.exports = function expressSsrPlugin(context: ExpressContext): Promise<Exp
 					const mfs: MemoryFileSystem = context.compiler.outputFileSystem as any;
 
 					// Update the client manifest
-					const clientManifestPath = path.join(outputPath, "vue-ssr-client-manifest.json");
+					const clientManifestPath = path.join(webpackConfig.output.path, "vue-ssr-client-manifest.json");
 					if (mfs.existsSync(clientManifestPath))
 						global.EXPRESS_VUE_SSR_UPDATE_RENDERER("clientManifest", mfs.readFileSync(clientManifestPath).toString("utf-8"));
 
 					// Update the template
-					const indexFilePath = path.join(outputPath, "index.html");
+					const indexFilePath = path.join(webpackConfig.output.path, "index.html");
 					if (mfs.existsSync(indexFilePath))
 						global.EXPRESS_VUE_SSR_UPDATE_RENDERER("template", mfs.readFileSync(indexFilePath).toString("utf-8"));
 				});
 			}
 
 			// Serve our generated assets
-			context.expressApp.use(outputPath.replace(/^\./, ""),
-				require("express").static(outputPath));
+			context.expressApp.use(webpackConfig.output.publicPath.replace(/^\./, ""),
+				require("express").static(webpackConfig.output.path));
 
 			// Register the catch all express route
 			context.expressApp.get("*", (req, res) => {
