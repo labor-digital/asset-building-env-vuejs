@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.3.4](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.3.4%0Dv2.3.3#diff) (2019-11-05)
+
+
+### Bug Fixes
+
+* **ExpressSsrPlugin:** fix issues when injecting the metadata into the template ([322d195](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/322d195))
+
+
+
 ## [2.3.3](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.3.3%0Dv2.3.2#diff) (2019-10-28)
 
 
