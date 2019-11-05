@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.3.3](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.3.3%0Dv2.3.2#diff) (2019-10-28)
+
+
+### Bug Fixes
+
+* fix for node env generation ([4e25277](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/4e25277))
+* fix template rendering on ssr to avoid duplicate code execution ([04e37a4](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/04e37a4))
+
+
+
 ## [2.3.2](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.3.2%0Dv2.3.1#diff) (2019-10-28)
 
 
