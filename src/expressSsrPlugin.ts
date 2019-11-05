@@ -43,47 +43,21 @@ let preparedMetaData: null | Array<{ find: RegExp, replace: string }> = null;
 function applyMetaData(vueContext, chunk: string): string {
 	if (typeof vueContext.meta === "undefined") return chunk;
 
-	// Prepare the metadata if required
-	if (preparedMetaData === null) {
-		const {
-			title, htmlAttrs, headAttrs, bodyAttrs, link,
-			style, script, noscript, meta
-		} = vueContext.meta.inject();
-		preparedMetaData = [];
+	const {
+		title, htmlAttrs, headAttrs, bodyAttrs, link,
+		style, script, noscript, meta
+	} = vueContext.meta.inject();
+	preparedMetaData = [];
 
-		// Build the placeholders
-		const nl = "\r\n";
-		preparedMetaData.push({
-			find: /data-vue-template-html/g,
-			replace: "data-vue-meta-server-rendered " + htmlAttrs.text()
-		});
-		preparedMetaData.push({
-			find: /data-vue-template-head/g,
-			replace: headAttrs.text()
-		});
-		preparedMetaData.push({
-			find: /<!--vue-head-outlet-->/g,
-			replace: meta.text() + nl + title.text() + nl + link.text() + nl
-				+ style.text() + nl + script.text() + nl + noscript.text()
-		});
-		preparedMetaData.push({
-			find: /data-vue-template-body/g,
-			replace: bodyAttrs.text()
-		});
-		preparedMetaData.push({
-			find: /<!--vue-pbody-outlet-->/g,
-			replace: style.text({pbody: true}) + nl + script.text({pbody: true}) + noscript.text({pbody: true})
-		});
-		preparedMetaData.push({
-			find: /<!--vue-body-outlet-->/g,
-			replace: style.text({body: true}) + nl + script.text({body: true}) + noscript.text({body: true})
-		});
-	}
-
-	// Apply the metadata
-	preparedMetaData.forEach(placeholder => {
-		chunk = chunk.replace(placeholder.find, placeholder.replace);
-	});
+	// Build the placeholders
+	const nl = "\r\n";
+	chunk = chunk.replace(/data-vue-template-html/g, "data-vue-meta-server-rendered " + htmlAttrs.text());
+	chunk = chunk.replace(/data-vue-template-head/g, headAttrs.text());
+	chunk = chunk.replace(/<!--vue-head-outlet-->/g, meta.text() + nl + title.text() + nl + link.text() + nl
+		+ style.text() + nl + script.text() + nl + noscript.text());
+	chunk = chunk.replace(/data-vue-template-body/g, bodyAttrs.text());
+	chunk = chunk.replace(/<!--vue-pbody-outlet-->/g, style.text({pbody: true}) + nl + script.text({pbody: true}) + noscript.text({pbody: true}));
+	chunk = chunk.replace(/<!--vue-body-outlet-->/g, style.text({body: true}) + nl + script.text({body: true}) + noscript.text({body: true}));
 
 	// Done
 	return chunk;
@@ -99,7 +73,7 @@ module.exports = function expressSsrPlugin(context: ExpressContext): Promise<Exp
 	 */
 	function createRenderer(bundle, template, clientManifest?) {
 		return createBundleRenderer(bundle, {
-			runInNewContext: false,
+			runInNewContext: process.env.NODE_ENV === "development",
 			template,
 			clientManifest,
 			cache: new LRU({
