@@ -1,7 +1,7 @@
 import ExpressContext from "@labor/asset-building/dist/Express/ExpressContext";
 import fs from "fs";
 import * as path from "path";
-import {createBundleRenderer} from "vue-server-renderer";
+import {BundleRendererOptions, createBundleRenderer} from "vue-server-renderer";
 import LRU from "lru-cache";
 import {Configuration} from "webpack";
 import MemoryFileSystem = require("memory-fs");
@@ -34,6 +34,24 @@ function getWebpackConfig(context: ExpressContext): Promise<Configuration> {
  */
 let preparedMetaData: null | Array<{ find: RegExp, replace: string }> = null;
 
+
+/**
+ * Internal helper to inject only the scripts into the build chunks.
+ * This avoids issues when the hot reload plugin and the bundle renderer start to fight over
+ * the priority of css rules.
+ *
+ * @param vueContext
+ * @param chunk
+ */
+function applyRendererMetaData(vueContext, chunk: string): string {
+	// This is dev only
+	if (process.env.NODE_ENV !== "development") return chunk;
+	chunk = chunk.replace(/<!--vue-renderer-head-outlet-->/g, function () {
+		return vueContext.renderScripts();
+	});
+	return chunk;
+}
+
 /**
  * Internal helper to apply the vue-meta properties into our template
  * @see https://vue-meta.nuxtjs.org/guide/ssr.html#inject-metadata-into-page-stream
@@ -51,13 +69,13 @@ function applyMetaData(vueContext, chunk: string): string {
 
 	// Build the placeholders
 	const nl = "\r\n";
-	chunk = chunk.replace(/data-vue-template-html/g, "data-vue-meta-server-rendered " + htmlAttrs.text());
+	chunk = chunk.replace(/data-vue-template-html/g, () => "data-vue-meta-server-rendered " + htmlAttrs.text());
 	chunk = chunk.replace(/data-vue-template-head/g, headAttrs.text());
-	chunk = chunk.replace(/<!--vue-head-outlet-->/g, meta.text() + nl + title.text() + nl + link.text() + nl
+	chunk = chunk.replace(/<!--vue-head-outlet-->/g, () => meta.text() + nl + title.text() + nl + link.text() + nl
 		+ style.text() + nl + script.text() + nl + noscript.text());
-	chunk = chunk.replace(/data-vue-template-body/g, bodyAttrs.text());
-	chunk = chunk.replace(/<!--vue-pbody-outlet-->/g, style.text({pbody: true}) + nl + script.text({pbody: true}) + noscript.text({pbody: true}));
-	chunk = chunk.replace(/<!--vue-body-outlet-->/g, style.text({body: true}) + nl + script.text({body: true}) + noscript.text({body: true}));
+	chunk = chunk.replace(/data-vue-template-body/g, () => bodyAttrs.text());
+	chunk = chunk.replace(/<!--vue-pbody-outlet-->/g, () => style.text({pbody: true}) + nl + script.text({pbody: true}) + noscript.text({pbody: true}));
+	chunk = chunk.replace(/<!--vue-body-outlet-->/g, () => style.text({body: true}) + nl + script.text({body: true}) + noscript.text({body: true}));
 
 	// Done
 	return chunk;
@@ -72,15 +90,18 @@ module.exports = function expressSsrPlugin(context: ExpressContext): Promise<Exp
 	 * @param clientManifest
 	 */
 	function createRenderer(bundle, template, clientManifest?) {
-		return createBundleRenderer(bundle, {
-			runInNewContext: process.env.NODE_ENV === "development",
+		const isDev = process.env.NODE_ENV === "development";
+		const options: BundleRendererOptions = {
+			runInNewContext: isDev ? true : "once",
 			template,
 			clientManifest,
-			cache: new LRU({
-				max: process.env.NODE_ENV === "development" ? 1 : 1000,
-				maxAge: 1000 * 60 * 15
-			})
+			inject: !isDev
+		};
+		if (!isDev) options.cache = new LRU({
+			max: 1000,
+			maxAge: 1000 * 60 * 15
 		});
+		return createBundleRenderer(bundle, options);
 	}
 
 	return getWebpackConfig(context)
@@ -89,7 +110,6 @@ module.exports = function expressSsrPlugin(context: ExpressContext): Promise<Exp
 			if (context.isProd) {
 				const serverBundle = require(path.resolve(webpackConfig.output.path, "./vue-ssr-server-bundle.json"));
 				const clientManifest = require(path.resolve(webpackConfig.output.path, "./vue-ssr-client-manifest.json"));
-
 				const template = fs.readFileSync(path.resolve(webpackConfig.output.path, "./index.html"), "utf-8");
 				renderer = createRenderer(serverBundle, template, clientManifest);
 			} else {
@@ -162,7 +182,7 @@ module.exports = function expressSsrPlugin(context: ExpressContext): Promise<Exp
 
 				// Apply meta data by the "vue-meta" plugin
 				stream.on("data", (chunk: Buffer) => {
-					res.write(applyMetaData(vueContext, chunk.toString("utf-8")));
+					res.write(applyRendererMetaData(vueContext, applyMetaData(vueContext, chunk.toString("utf-8"))));
 				});
 
 				// End the response when the stream ends
