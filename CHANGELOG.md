@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.4.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.4.0%0Dv2.3.4#diff) (2019-11-08)
+
+
+### Features
+
+* **ExpressSsrPlugin:** render inline styles only in production, to avoid issues with combating definitions when using dev hot reloading ([af08017](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/af08017))
+
+
+
 ## [2.3.4](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.3.4%0Dv2.3.3#diff) (2019-11-05)
 
 
