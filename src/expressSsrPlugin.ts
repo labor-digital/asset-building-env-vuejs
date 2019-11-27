@@ -20,6 +20,9 @@ declare global {
  */
 global.EXPRESS_VUE_SSR_MODE = true;
 
+// Check if we are in dev mode
+const isDevMode = process.env.NODE_ENV === "development";
+
 /**
  * Finds the webpack config object we need for our internal logic
  * @param context
@@ -36,7 +39,7 @@ let preparedMetaData: null | Array<{ find: RegExp, replace: string }> = null;
 
 
 /**
- * Internal helper to inject only the scripts into the build chunks.
+ * Internal helper to inject only the scripts and the state into the build chunks.
  * This avoids issues when the hot reload plugin and the bundle renderer start to fight over
  * the priority of css rules.
  *
@@ -44,10 +47,9 @@ let preparedMetaData: null | Array<{ find: RegExp, replace: string }> = null;
  * @param chunk
  */
 function applyRendererMetaData(vueContext, chunk: string): string {
-	// This is dev only
-	if (process.env.NODE_ENV !== "development") return chunk;
 	chunk = chunk.replace(/<!--vue-renderer-head-outlet-->/g, function () {
-		return vueContext.renderScripts();
+		if (!isDevMode) return "";
+		return vueContext.renderScripts() + " " + vueContext.renderState();
 	});
 	return chunk;
 }
@@ -90,14 +92,15 @@ module.exports = function expressSsrPlugin(context: ExpressContext): Promise<Exp
 	 * @param clientManifest
 	 */
 	function createRenderer(bundle, template, clientManifest?) {
-		const isDev = process.env.NODE_ENV === "development";
 		const options: BundleRendererOptions = {
-			runInNewContext: isDev ? true : "once",
+			runInNewContext: isDevMode ? true : "once",
 			template,
 			clientManifest,
-			inject: !isDev
+			// Don't inject the styles in dev mode to prevent
+			// issues (duplicate style tags) when using hot reloading
+			inject: !isDevMode
 		};
-		if (!isDev) options.cache = new LRU({
+		if (!isDevMode) options.cache = new LRU({
 			max: 1000,
 			maxAge: 1000 * 60 * 15
 		});

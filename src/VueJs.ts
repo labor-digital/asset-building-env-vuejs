@@ -229,8 +229,9 @@ export default function (context: WorkerContext, scope: string) {
 
 	// Change the style loader to use the vue style loader
 	context.eventEmitter.bind(AssetBuilderEventList.FILTER_LOADER_CONFIG, (e) => {
-		// Only inject the vue loader in a development context
-		if (context.isProd) return;
+		// If we are in production mode and we don't use the server
+		// side renderer we will not inject the vue style loader
+		if (context.app.useSsr !== true && context.isProd) return;
 
 		// Skip if the package requires us to use the css extract plugin
 		if (context.app.useCssExtractPlugin === true) return;
