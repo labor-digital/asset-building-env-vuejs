@@ -227,6 +227,15 @@ export default function (context: WorkerContext, scope: string) {
 
 	});
 
+	// Make sure the styles get minified when we are using server side rendering in production mode
+	context.eventEmitter.bind(AssetBuilderEventList.FILTER_POSTCSS_PLUGINS, (e) => {
+		// Ignore if this is neither a ssr app, nor build for production
+		if (context.app.useSsr !== true || context.isProd) return;
+
+		// Add the css minifier plugin
+		e.args.plugins.push(require("cssnano"));
+	});
+
 	// Change the style loader to use the vue style loader
 	context.eventEmitter.bind(AssetBuilderEventList.FILTER_LOADER_CONFIG, (e) => {
 		// If we are in production mode and we don't use the server
@@ -243,8 +252,19 @@ export default function (context: WorkerContext, scope: string) {
 				if (typeof v.loader === "undefined") return;
 
 				// Inject vue style loader
-				if (v.loader.match(/mini-css-extract-plugin/))
-					e.args.config.use[k] = "vue-style-loader";
+				if (v.loader.match(/mini-css-extract-plugin/)) {
+					e.args.config.use[k] = {
+						loader: "vue-style-loader",
+						options: {
+							minimize: true
+						}
+					};
+				}
+				console.log(e.args.config.use);
+				// if (v.loader.match(/^css-loader/)) {
+				// 	e.args.config.use[k].options.minimize = true;
+				// 	console.log("Modify Css loader!", e.args.config.use[k]);
+				// }
 			});
 		}
 
