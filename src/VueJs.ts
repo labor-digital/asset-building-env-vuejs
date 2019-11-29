@@ -253,18 +253,8 @@ export default function (context: WorkerContext, scope: string) {
 
 				// Inject vue style loader
 				if (v.loader.match(/mini-css-extract-plugin/)) {
-					e.args.config.use[k] = {
-						loader: "vue-style-loader",
-						options: {
-							minimize: true
-						}
-					};
+					e.args.config.use[k] = "vue-style-loader";
 				}
-				console.log(e.args.config.use);
-				// if (v.loader.match(/^css-loader/)) {
-				// 	e.args.config.use[k].options.minimize = true;
-				// 	console.log("Modify Css loader!", e.args.config.use[k]);
-				// }
 			});
 		}
 
