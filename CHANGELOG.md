@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.4.1](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.4.1%0Dv2.4.0#diff) (2019-11-27)
+
+
+### Bug Fixes
+
+* make sure the ssr renderer can inject the styles into the page html even when running in production mode ([f5d59e0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/f5d59e0))
+
+
+
 # [2.4.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.4.0%0Dv2.3.4#diff) (2019-11-08)
 
 
