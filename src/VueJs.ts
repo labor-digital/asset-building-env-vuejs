@@ -236,7 +236,7 @@ export default function (context: WorkerContext, scope: string) {
 	// Make sure the styles get minified when we are using server side rendering in production mode
 	context.eventEmitter.bind(AssetBuilderEventList.FILTER_POSTCSS_PLUGINS, (e) => {
 		// Ignore if this is neither a ssr app, nor build for production
-		if (context.app.useSsr !== true || context.isProd) return;
+		if (context.app.useSsr !== true || !context.isProd) return;
 
 		// Add the css minifier plugin
 		e.args.plugins.push(require("cssnano"));
