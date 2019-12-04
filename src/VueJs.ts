@@ -5,7 +5,7 @@ import {VueLoaderPlugin} from "vue-loader";
 import {AssetBuilderConfiguratorIdentifiers} from "@labor/asset-building/dist/AssetBuilderConfiguratorIdentifiers";
 import {AppDefinitionInterface} from "@labor/asset-building/dist/Interfaces/AppDefinitionInterface";
 import {ProcessManager} from "@labor/asset-building/dist/Core/ProcessManager";
-import * as path from "path";
+import path from "path";
 import {md5} from "@labor/helferlein/lib/Misc/md5";
 
 export default function (context: WorkerContext, scope: string) {
@@ -244,6 +244,28 @@ export default function (context: WorkerContext, scope: string) {
 
 	// Change the style loader to use the vue style loader
 	context.eventEmitter.bind(AssetBuilderEventList.FILTER_LOADER_CONFIG, (e) => {
+		const cssExtractorPluginRegex = new RegExp("mini-css-extract-plugin");
+
+		// Register additional loader to strip out all /deep/ selectors we need for component nesting,
+		// but that are not wanted in a browser environment
+		if (e.args.identifier === AssetBuilderConfiguratorIdentifiers.SASS_LOADER ||
+			e.args.identifier === AssetBuilderConfiguratorIdentifiers.LESS_LOADER) {
+			const deepRemoverPath = path.resolve(__dirname, "DeepRemoverLoader.js");
+			e.args.config.use.forEach((v, k) => {
+
+				// Inject vue style loader
+				if (v.loader.match(cssExtractorPluginRegex)) {
+					const before = e.args.config.use.slice(0, k + 1);
+					const after = e.args.config.use.slice(k + 1);
+					e.args.config.use = [
+						...before,
+						deepRemoverPath,
+						...after
+					];
+				}
+			});
+		}
+
 		// If we are in production mode and we don't use the server
 		// side renderer we will not inject the vue style loader
 		if (context.app.useSsr !== true && context.isProd) return;
@@ -258,7 +280,7 @@ export default function (context: WorkerContext, scope: string) {
 				if (typeof v.loader === "undefined") return;
 
 				// Inject vue style loader
-				if (v.loader.match(/mini-css-extract-plugin/)) {
+				if (v.loader.match(cssExtractorPluginRegex)) {
 					e.args.config.use[k] = "vue-style-loader";
 				}
 			});
@@ -271,7 +293,7 @@ export default function (context: WorkerContext, scope: string) {
 				if (typeof v.loader === "undefined") return;
 
 				// Inject vue style loader
-				if (v.loader.match(/mini-css-extract-plugin/))
+				if (v.loader.match(cssExtractorPluginRegex))
 					e.args.config.use[k] = "vue-style-loader";
 			});
 		}
