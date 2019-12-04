@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.5.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.5.0%0Dv2.4.3#diff) (2019-12-04)
+
+
+### Bug Fixes
+
+* fix issue where the css code was not minified in production ([942365a](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/942365a))
+
+
+### Features
+
+* make sure the client output file contains a hash sum so we avoid caching issues ([4c392ee](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/4c392ee))
+
+
+
 ## [2.4.3](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.4.3%0Dv2.4.2#diff) (2019-11-29)
 
 
