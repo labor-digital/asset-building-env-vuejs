@@ -6,6 +6,7 @@ import {AssetBuilderConfiguratorIdentifiers} from "@labor/asset-building/dist/As
 import {AppDefinitionInterface} from "@labor/asset-building/dist/Interfaces/AppDefinitionInterface";
 import {ProcessManager} from "@labor/asset-building/dist/Core/ProcessManager";
 import * as path from "path";
+import {md5} from "@labor/helferlein/lib/Misc/md5";
 
 export default function (context: WorkerContext, scope: string) {
 	if (scope !== "app") throw new Error("The vue extension can not be defined on a global scope!");
@@ -113,6 +114,11 @@ export default function (context: WorkerContext, scope: string) {
 						}),
 					]
 				});
+
+				// Rewrite output file
+				const hash = md5((new Date()).toTimeString() + "-" + Math.random() + Math.random());
+				context.webpackConfig.output.filename =
+					context.webpackConfig.output.filename.replace(/(.*?)\.([^.]*?)/g, "$1-" + hash + ".$2");
 			}
 		}
 	});
