@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.7.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.7.0%0Dv2.6.0#diff) (2019-12-29)
+
+
+### Features
+
+* update dependencies + use registerPublicAssets method to register static assets ([5f2fd90](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/5f2fd90))
+
+
+
 # [2.6.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.6.0%0Dv2.5.0#diff) (2019-12-04)
 
 
