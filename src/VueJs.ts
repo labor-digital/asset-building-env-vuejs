@@ -242,9 +242,16 @@ export default function (context: WorkerContext, scope: string) {
 		e.args.plugins.push(require("cssnano"));
 	});
 
+	// Make sure we don't run into issues when using the css extract plugin with vue modules
+	context.eventEmitter.bind(AssetBuilderEventList.FILTER_PLUGIN_CONFIG, (e) => {
+		if (e.args.identifier !== AssetBuilderConfiguratorIdentifiers.CSS_EXTRACT_PLUGIN) return;
+		e.args.config.ignoreOrder = true;
+	});
+
 	// Change the style loader to use the vue style loader
 	context.eventEmitter.bind(AssetBuilderEventList.FILTER_LOADER_CONFIG, (e) => {
 		const cssExtractorPluginRegex = new RegExp("mini-css-extract-plugin");
+
 
 		// Register additional loader to strip out all /deep/ selectors we need for component nesting,
 		// but that are not wanted in a browser environment
