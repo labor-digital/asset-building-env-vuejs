@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.7.1](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.7.1%0Dv2.7.0#diff) (2020-01-09)
+
+
+### Bug Fixes
+
+* fix ordering warnings when using vue components in combination with the css-extract-plugin ([28ff56d](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/28ff56d))
+
+
+
 # [2.7.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.7.0%0Dv2.6.0#diff) (2019-12-29)
 
 
