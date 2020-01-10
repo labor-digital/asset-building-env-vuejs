@@ -164,23 +164,9 @@ module.exports = function expressSsrPlugin(context: ExpressContext): Promise<Exp
 				const s = Date.now();
 				res.setHeader("Content-Type", "text/html");
 
-				const errorHandler = err => {
-					if (err && err.code === 404) {
-						res.status(404).end("404 | Page Not Found");
-					} else {
-						// Render Error Page or Redirect
-						res.status(500).end("500 | Internal Server Error");
-						console.error(`Error during render : ${req.url}`);
-						console.error(err);
-					}
-				};
-
 				// Create the rendering stream
-				const vueContext = {url: req.url, status: 200};
+				const vueContext = {url: req.url, serverRequest: req, serverResponse: res};
 				const stream = renderer.renderToStream(vueContext);
-
-				// Add the status to the response object
-				stream.once("data", () => res.status(vueContext.status));
 
 				// Apply meta data by the "vue-meta" plugin
 				stream.on("data", (chunk: Buffer) => {
@@ -194,7 +180,12 @@ module.exports = function expressSsrPlugin(context: ExpressContext): Promise<Exp
 				});
 
 				// Handle errors
-				stream.on("error", errorHandler);
+				stream.on("error", err => {
+					// Render Error Page or Redirect
+					res.status(500).end("500 | Internal Server Error");
+					console.error(`Error during render : ${req.url}`);
+					console.error(err);
+				});
 			});
 
 			return Promise.resolve(context);
