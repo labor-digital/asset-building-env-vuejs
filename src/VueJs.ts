@@ -248,6 +248,12 @@ export default function (context: WorkerContext, scope: string) {
 		e.args.config.ignoreOrder = true;
 	});
 
+	// Make sure we don't remove the vue-ssr-server-bundle.json in the clean output dir plugin
+	context.eventEmitter.bind(AssetBuilderEventList.FILTER_PLUGIN_CONFIG, (e) => {
+		if (e.args.identifier !== AssetBuilderConfiguratorIdentifiers.CLEAN_OUTPUT_DIR_PLUGIN) return;
+		e.args.config.cleanOnceBeforeBuildPatterns.push("!vue-ssr-server-bundle.json");
+	});
+
 	// Change the style loader to use the vue style loader
 	context.eventEmitter.bind(AssetBuilderEventList.FILTER_LOADER_CONFIG, (e) => {
 		const cssExtractorPluginRegex = new RegExp("mini-css-extract-plugin");
