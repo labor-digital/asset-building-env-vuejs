@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.8.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.8.0%0Dv2.7.1#diff) (2020-01-10)
+
+
+### Features
+
+* **ExpressSsrPlugin:** let the app handle both status and header management, by passing the express request and response objects to the vue render context ([ebf7abe](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/ebf7abe))
+
+
+
 ## [2.7.1](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.7.1%0Dv2.7.0#diff) (2020-01-09)
 
 
