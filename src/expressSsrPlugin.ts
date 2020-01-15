@@ -156,7 +156,8 @@ module.exports = function expressSsrPlugin(context: ExpressContext): Promise<Exp
 			}
 
 			// Serve our generated assets
-			context.registerPublicAssets(webpackConfig.output.publicPath.replace(/^\./, ""));
+			let publicPath = path.relative(context.packageJsonDirectory, webpackConfig.output.path.replace(/^\.\/?/, ""));
+			context.registerPublicAssets(publicPath);
 
 			// Register the catch all express route
 			context.expressApp.get("*", (req, res) => {
