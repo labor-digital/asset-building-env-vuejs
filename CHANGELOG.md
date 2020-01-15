@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.8.1](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.8.1%0Dv2.8.0#diff) (2020-01-15)
+
+
+### Bug Fixes
+
+* make sure we don't loose vue-ssr-server-bundle.json because of the clean output dir plugin ([72e8ef8](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/commits/72e8ef8))
+
+
+
 # [2.8.0](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.8.0%0Dv2.7.1#diff) (2020-01-10)
 
 
