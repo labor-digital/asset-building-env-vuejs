@@ -12,16 +12,16 @@ You should also consider installing the [asset-building-dev-server](https://www.
 npm install --save-dev @labor-digital/asset-building
 ```
 * Install the npm dependency:
-`` npm install --save-dev @labor-digital/asset-building-env-vuejs``
+```
+npm install --save-dev @labor-digital/asset-building-env-vuejs
+```
 * Add the extension to your package.json
 ```
 { 
     "apps": [
-        ...
         {
             ...
             "extensions": [
-                ...
                 "@labor-digital/asset-building-env-vuejs"
             ]
         }
@@ -44,6 +44,11 @@ you get all the benefits of hot module replacement and in-memory compiling out o
 #### 3. SSR (Server-Side-Rendering) Mode
 Vue.js comes with a powerful [server-side rendering implementation](https://ssr.vuejs.org/). To use it to it's fullest we added built-in support for the express middleware stack. For the best results you should also use the [asset-building-dev-server](https://www.npmjs.com/package/@labor-digital/asset-building-dev-server) extension to get all benefits of vue's ssr capabilities in production and webpacks awesome benefits as well.
 To enable SSR in your app, you have to add ``` "useSsr": true ``` to the app configuration in your package.json. In addition you have to add the ExpressSsrPlugin to your index.js, as described in the demo-ssr directory.
+
+## Deep for nested components
+When you are using scoped styles in combination with "sass" you probably know, that you can style child components by using the "/deep/" selector modifier.
+However the node style parser no longer removes the "/deep/" from the outputted css source which can cause issues in firefox or the internet explorer.
+For that reason this package comes with a special webpack loader that removes all "/deep/" selectors from the generated css files.
 
 ## Options
 ####useSsr

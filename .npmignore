@@ -5,3 +5,4 @@ tsconfig.json
 flushLib.js
 .github
 .gitignore
+indexTemplate
