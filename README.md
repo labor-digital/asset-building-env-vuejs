@@ -1,31 +1,68 @@
-# LABOR Asset Building - Vue.js Environment
-This package provides you with everything you need to use vue.js in our webpack pipeline.
-Uses vue-loader to support single file components, prepares eslint for vue and sets up the required style loaders.
+# LABOR - Asset Building - Vue.js Extension
+**This package is an extension to our [asset building bundle](https://www.npmjs.com/package/@labor-digital/asset-building).**
 
-You should also consider installing the asset-building-dev-server package to get the most out of your local development experience
+It provides you with everything you need to use vue.js in our webpack pipeline.
+The library utilizes vue-loader to support single file components, prepares eslint for vue and sets up the required style loaders.
+
+You should also consider installing the [asset-building-dev-server](https://www.npmjs.com/package/@labor-digital/asset-building-dev-server) extension to get the most out of your local development experience
 
 ## Installation
-* Use our private npm registry!
-* Install our asset builder
-`` npm install --save-dev @labor/asset-building ``
-* Install the npm dependency
-`` npm install --save-dev @labor/asset-building-env-vuejs``
-* Add the provider plugin to your package.json
+* Install our asset builder:
+``` 
+npm install --save-dev @labor-digital/asset-building
+```
+* Install the npm dependency:
+`` npm install --save-dev @labor-digital/asset-building-env-vuejs``
+* Add the extension to your package.json
 ```
 { 
-    "builderVersion": 2,
     "apps": [
-    	[...]
-    	{
-    		"environment": "vuejs"
-    		[...]
-    	}
+        ...
+        {
+            ...
+            "extensions": [
+                ...
+                "@labor-digital/asset-building-env-vuejs"
+            ]
+        }
     ]
 }
 ```
 * Done! :-)
 
+## Usage
+There are three modes in which you can develop your application.
+
+#### 1. Default Mode
+By default and without any other configuration the extension will set up the webpack process with all required plugins
+and configuration so you can compile and watch your vue.js components in a breeze. After installing the extension run "npm run build" and you should be done.
+
+#### 2. Dev-Server Mode
+When you are using the "dev" command, provided by the [asset-building-dev-server](https://www.npmjs.com/package/@labor-digital/asset-building-dev-server) extension,
+you get all the benefits of hot module replacement and in-memory compiling out of the box.
+
+#### 3. SSR (Server-Side-Rendering) Mode
+Vue.js comes with a powerful [server-side rendering implementation](https://ssr.vuejs.org/). To use it to it's fullest we added built-in support for the express middleware stack. For the best results you should also use the [asset-building-dev-server](https://www.npmjs.com/package/@labor-digital/asset-building-dev-server) extension to get all benefits of vue's ssr capabilities in production and webpacks awesome benefits as well.
+To enable SSR in your app, you have to add ``` "useSsr": true ``` to the app configuration in your package.json. In addition you have to add the ExpressSsrPlugin to your index.js, as described in the demo-ssr directory.
+
 ## Options
+####useSsr
+When you want to use your app with SSR and vue.js's bundle renderer you have to set the "useSsr" to true.
+This will enable the generation of the server and client manifest files that are required for the renderer.
+```
+{
+    "labor": {
+        "apps": [
+            {
+                ...
+                "useSsr": true,
+                ...
+            }
+        ]
+    }
+}
+```
+
 ####useCssExtractPlugin
 By default the "mimiCssExtract" plugin will be disabled in order to allow hot reloading for the vue components. 
 If you are using a legacy project in combination with vue, you may set this to FALSE. In that case, all css files will be dumped, even if in development.
@@ -43,3 +80,10 @@ If you are using a legacy project in combination with vue, you may set this to F
     }
 }
 ```
+
+## Postcardware
+You're free to use this package, but if it makes it to your production environment we highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using.
+
+Our address is: LABOR.digital - Fischtorplatz 21 - 55116 Mainz, Germany
+
+We publish all received postcards on our [company website](https://labor.digital). 

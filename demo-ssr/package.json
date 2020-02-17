@@ -7,9 +7,9 @@
 		"watch": "labor-asset-building watch"
 	},
 	"devDependencies": {
-		"@labor/asset-building": "^4.3.1",
-		"@labor/asset-building-dev-server": "*",
-		"@labor/asset-building-env-vuejs": "file:.."
+		"@labor-digital/asset-building": "^4.9.2",
+		"@labor-digital/asset-building-dev-server": "*",
+		"@labor-digital/asset-building-env-vuejs": "file:.."
 	},
 	"labor": {
 		"builderVersion": 2,
@@ -21,12 +21,12 @@
 				"htmlTemplate": true,
 				"useSsr": true,
 				"extensions": [
-					"@labor/asset-building-env-vuejs"
+					"@labor-digital/asset-building-env-vuejs"
 				]
 			}
 		],
 		"extensions": [
-			"@labor/asset-building-dev-server"
+			"@labor-digital/asset-building-dev-server"
 		]
 	},
 	"dependencies": {

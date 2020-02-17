@@ -5,11 +5,11 @@
 	"scripts": {
 		"build": "labor-asset-building build",
 		"watch": "labor-asset-building watch",
-		"link": "npm link @labor/asset-building @labor/asset-building-env-vuejs"
+		"link": "npm link @labor-digital/asset-building @labor-digital/asset-building-env-vuejs"
 	},
 	"devDependencies": {
-		"@labor/asset-building": "*",
-		"@labor/asset-building-env-vuejs": "*"
+		"@labor-digital/asset-building": "*",
+		"@labor-digital/asset-building-env-vuejs": "*"
 	},
 	"labor": {
 		"builderVersion": 2,
@@ -20,7 +20,7 @@
 				"publicPath": "./",
 				"htmlTemplate": true,
 				"extensions": [
-					"@labor/asset-building-env-vuejs"
+					"@labor-digital/asset-building-env-vuejs"
 				]
 			}
 		]
