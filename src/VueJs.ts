@@ -1,12 +1,12 @@
-import {WorkerContext} from "@labor/asset-building/dist/Core/WorkerContext";
-import {AssetBuilderEventList} from "@labor/asset-building/dist/AssetBuilderEventList";
+import {WorkerContext} from "@labor-digital/asset-building/dist/Core/WorkerContext";
+import {AssetBuilderEventList} from "@labor-digital/asset-building/dist/AssetBuilderEventList";
 import merge from "webpack-merge";
 import {VueLoaderPlugin} from "vue-loader";
-import {AssetBuilderConfiguratorIdentifiers} from "@labor/asset-building/dist/AssetBuilderConfiguratorIdentifiers";
-import {AppDefinitionInterface} from "@labor/asset-building/dist/Interfaces/AppDefinitionInterface";
-import {ProcessManager} from "@labor/asset-building/dist/Core/ProcessManager";
+import {AssetBuilderConfiguratorIdentifiers} from "@labor-digital/asset-building/dist/AssetBuilderConfiguratorIdentifiers";
+import {AppDefinitionInterface} from "@labor-digital/asset-building/dist/Interfaces/AppDefinitionInterface";
+import {ProcessManager} from "@labor-digital/asset-building/dist/Core/ProcessManager";
 import path from "path";
-import {md5} from "@labor/helferlein/lib/Misc/md5";
+import {md5} from "@labor-digital/helferlein/lib/Misc/md5";
 
 export default function (context: WorkerContext, scope: string) {
 	if (scope !== "app") throw new Error("The vue extension can not be defined on a global scope!");

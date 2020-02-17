@@ -1,4 +1,4 @@
-import ExpressContext from "@labor/asset-building/dist/Express/ExpressContext";
+import ExpressContext from "@labor-digital/asset-building/dist/Express/ExpressContext";
 import fs from "fs";
 import * as path from "path";
 import {BundleRendererOptions, createBundleRenderer} from "vue-server-renderer";
