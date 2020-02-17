@@ -1,6 +1,19 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [2.9.0](https://github.com/labor-digital/asset-building-env-vuejs/compare/v2.8.2...v2.9.0) (2020-02-17)
+
+
+### Features
+
+* prepare release on github ([3e54e23](https://github.com/labor-digital/asset-building-env-vuejs/commit/3e54e23c1c1f53a340dc183129667cc0964ca4ee))
+
+
+### Bug Fixes
+
+* fix the breaking issue with the public asset registration ([431004d](https://github.com/labor-digital/asset-building-env-vuejs/commit/431004dd9ffb991f2eabe174358b2afd482a10f9))
+* update import statements for new package namespace ([69f4ce3](https://github.com/labor-digital/asset-building-env-vuejs/commit/69f4ce329195eab2aedc1bae78505afe85129627))
 
 ## [2.8.2](https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs/branches/compare/v2.8.2%0Dv2.8.1#diff) (2020-01-15)
 

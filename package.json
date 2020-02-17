@@ -1,6 +1,6 @@
 {
 	"name": "@labor-digital/asset-building-env-vuejs",
-	"version": "2.8.2",
+	"version": "2.9.0",
 	"description": "An extension to our asset-builder to build vue.js apps with zero config",
 	"main": "./dist/VueJs.js",
 	"scripts": {
