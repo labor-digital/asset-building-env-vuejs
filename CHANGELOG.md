@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.9.1](https://github.com/labor-digital/asset-building-env-vuejs/compare/v2.9.0...v2.9.1) (2020-02-17)
+
+
+### Bug Fixes
+
+* remove package locks from demo directories ([6c30526](https://github.com/labor-digital/asset-building-env-vuejs/commit/6c3052681ed5332b25a692e5560958d912ed78da))
+
 ## [2.9.0](https://github.com/labor-digital/asset-building-env-vuejs/compare/v2.8.2...v2.9.0) (2020-02-17)
 
 
