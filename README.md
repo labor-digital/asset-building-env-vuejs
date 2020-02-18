@@ -50,6 +50,16 @@ When you are using scoped styles in combination with "sass" you probably know, t
 However the node style parser no longer removes the "/deep/" from the outputted css source which can cause issues in firefox or the internet explorer.
 For that reason this package comes with a special webpack loader that removes all "/deep/" selectors from the generated css files.
 
+## Environment Variables for SSR
+We wanted to describe Apps on a environment base that should be dynamic and not bound to the build-time of webpack.
+For that we added basic support for environment variables to this package. 
+
+Environment Variables are only available for SSR apps by default and are implemented in the expressSsrPlugin.
+You can access the variables on ```winow.VUE_ENV``` in the frontend and on ```vueContext.VUE_ENV``` in your SSR app's context.
+
+Environment variables have to be whitelisted in your ssr plugin configuration. 
+Take a look at "SSR Options" to learn how you can configure the express ssr plugin.
+
 ## Options
 ####useSsr
 When you want to use your app with SSR and vue.js's bundle renderer you have to set the "useSsr" to true.
@@ -84,6 +94,55 @@ If you are using a legacy project in combination with vue, you may set this to F
         ]
     }
 }
+```
+
+## SSR Options
+It is possible to pass additional configuration to the SSR express plugin.
+Just call the "configure" method instead of passing the plugin through to the promise handler
+
+#### envVars
+Defines an array of environment variables that should be passed from the SSR to your App on the server **AND ON THE CLIENT SITE**. 
+Please make sure that you don't make critical secrets public! You can access the variables on ```winow.VUE_ENV``` in the frontend and on ```vueContext.VUE_ENV``` in your SSR app's context.
+```
+expressAssetBuildingPlugin(app)
+    .then(expressSsrPlugin.configure({
+         envVars: ["MY_VAR"]
+    }));
+```
+
+#### additionalEnvVars
+A list of key value pairs that will be automatically injected into the object at process.vueSsrEnv.
+They will be available in your browser app and your ssr context, so be careful!
+```
+expressAssetBuildingPlugin(app)
+    .then(expressSsrPlugin.configure({
+         additionalEnvVars: {
+            "MY_KEY": "myValue"
+         }
+    }));
+```
+
+#### vueContextFilter
+Can be used to modify the vue context object before it is passed to the bundle renderer
+```
+expressAssetBuildingPlugin(app)
+    .then(expressSsrPlugin.configure({
+         vueContextFilter: function(context) {
+            context.myVar = foo
+         }
+    }));
+```
+
+#### streamWrapper
+The stream wrapper will be called on every chunk that is outputted by vues bundle renderer.
+It can be used to replace dynamic markers in the html before it is passed to the response object.
+```
+expressAssetBuildingPlugin(app)
+    .then(expressSsrPlugin.configure({
+         streamWrapper: function(chunk, context) {
+              return chunk.replace(/a/g, "b");
+         }
+    }));
 ```
 
 ## Postcardware

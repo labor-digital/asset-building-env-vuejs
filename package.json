@@ -13,6 +13,7 @@
 		"url": "git+ssh://git@github.com:labor-digital/asset-building-env-vuejs.git"
 	},
 	"dependencies": {
+		"@labor-digital/helferlein": "3.17.3",
 		"@types/express": "4.17.2",
 		"@types/memory-fs": "0.3.2",
 		"@types/vue": "2.0.0",

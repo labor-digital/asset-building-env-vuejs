@@ -1,14 +1,41 @@
+/*
+ * Copyright 2020 LABOR.digital
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Last modified: 2020.02.18 at 15:09
+ */
+
 import ExpressContext from "@labor-digital/asset-building/dist/Express/ExpressContext";
+import {PlainObject} from "@labor-digital/helferlein/lib/Interfaces/PlainObject";
+import {forEach} from "@labor-digital/helferlein/lib/Lists/forEach";
+import {isArray} from "@labor-digital/helferlein/lib/Types/isArray";
+import {isFunction} from "@labor-digital/helferlein/lib/Types/isFunction";
+import {isPlainObject} from "@labor-digital/helferlein/lib/Types/isPlainObject";
+import {isString} from "@labor-digital/helferlein/lib/Types/isString";
+import {isUndefined} from "@labor-digital/helferlein/lib/Types/isUndefined";
 import fs from "fs";
+import LRU from "lru-cache";
 import * as path from "path";
 import {BundleRendererOptions, createBundleRenderer} from "vue-server-renderer";
-import LRU from "lru-cache";
 import {Configuration} from "webpack";
+import {ExpressSsrPluginOptions} from "./expressSsrPlugin.interfaces";
 import MemoryFileSystem = require("memory-fs");
 
 declare global {
 	namespace NodeJS {
 		interface Global {
+			vueEnv: PlainObject
 			EXPRESS_VUE_SSR_MODE: boolean
 			EXPRESS_VUE_SSR_UPDATE_RENDERER: Function
 		}
@@ -61,16 +88,24 @@ function applyRendererMetaData(vueContext, chunk: string): string {
  * @param chunk
  */
 function applyMetaData(vueContext, chunk: string): string {
+	const nl = "\r\n";
+	
+	// Inject the environment variables
+	const jsonEnv = JSON.stringify(vueContext.env);
+	const envScript = "<script type='text/javascript'>window.VUE_ENV = " + jsonEnv + ";</script>";
+	chunk = chunk.replace(/<!--vue-head-outlet-->/g, () => "<!--vue-head-outlet-->" + nl + envScript);
+	
+	// Check if we should inject additional metadata
 	if (typeof vueContext.meta === "undefined") return chunk;
-
+	
 	const {
 		title, htmlAttrs, headAttrs, bodyAttrs, link,
 		style, script, noscript, meta
 	} = vueContext.meta.inject();
 	preparedMetaData = [];
-
+	
+	
 	// Build the placeholders
-	const nl = "\r\n";
 	chunk = chunk.replace(/data-vue-template-html/g, () => "data-vue-meta-server-rendered " + htmlAttrs.text());
 	chunk = chunk.replace(/data-vue-template-head/g, headAttrs.text());
 	chunk = chunk.replace(/<!--vue-head-outlet-->/g, () => meta.text() + nl + title.text() + nl + link.text() + nl
@@ -78,13 +113,23 @@ function applyMetaData(vueContext, chunk: string): string {
 	chunk = chunk.replace(/data-vue-template-body/g, () => bodyAttrs.text());
 	chunk = chunk.replace(/<!--vue-pbody-outlet-->/g, () => style.text({pbody: true}) + nl + script.text({pbody: true}) + noscript.text({pbody: true}));
 	chunk = chunk.replace(/<!--vue-body-outlet-->/g, () => style.text({body: true}) + nl + script.text({body: true}) + noscript.text({body: true}));
-
+	
 	// Done
 	return chunk;
 }
 
-module.exports = function expressSsrPlugin(context: ExpressContext): Promise<ExpressContext> {
-
+/**
+ * Registers the required middlewares to render your vue app using server side rendering
+ *
+ * @param {ExpressContext} context
+ * @param {ExpressSsrPluginOptions} options
+ */
+module.exports = function expressSsrPlugin(context: ExpressContext, options?: ExpressSsrPluginOptions): Promise<ExpressContext> {
+	
+	// Prepare options
+	if (!isPlainObject(options)) options = {};
+	if (!isFunction(options.streamWrapper)) options.streamWrapper = (c) => c;
+	
 	/**
 	 * Internal helper to recreate the bundle renderer instance when webpack rebuilt the defnition
 	 * @param bundle
@@ -106,7 +151,7 @@ module.exports = function expressSsrPlugin(context: ExpressContext): Promise<Exp
 		});
 		return createBundleRenderer(bundle, options);
 	}
-
+	
 	return getWebpackConfig(context)
 		.then(webpackConfig => {
 			let renderer = null;
@@ -116,11 +161,11 @@ module.exports = function expressSsrPlugin(context: ExpressContext): Promise<Exp
 				const template = fs.readFileSync(path.resolve(webpackConfig.output.path, "./index.html"), "utf-8");
 				renderer = createRenderer(serverBundle, template, clientManifest);
 			} else {
-
+				
 				let template = null;
 				let bundle = null;
 				let clientManifest = undefined;
-
+				
 				// Register global render generation
 				global.EXPRESS_VUE_SSR_UPDATE_RENDERER = (type: "template" | "bundle" | "clientManifest", value: string) => {
 					try {
@@ -138,47 +183,69 @@ module.exports = function expressSsrPlugin(context: ExpressContext): Promise<Exp
 						process.exit(1);
 					}
 				};
-
+				
 				// Register callback when the compiler is done
 				context.compiler.hooks.done.tap("ExpressSsrPlugin", () => {
 					const mfs: MemoryFileSystem = context.compiler.outputFileSystem as any;
-
+					
 					// Update the client manifest
 					const clientManifestPath = path.join(webpackConfig.output.path, "vue-ssr-client-manifest.json");
 					if (mfs.existsSync(clientManifestPath))
 						global.EXPRESS_VUE_SSR_UPDATE_RENDERER("clientManifest", mfs.readFileSync(clientManifestPath).toString("utf-8"));
-
+					
 					// Update the template
 					const indexFilePath = path.join(webpackConfig.output.path, "index.html");
 					if (mfs.existsSync(indexFilePath))
 						global.EXPRESS_VUE_SSR_UPDATE_RENDERER("template", mfs.readFileSync(indexFilePath).toString("utf-8"));
 				});
 			}
-
+			
 			// Serve our generated assets
 			context.registerPublicAssets(webpackConfig.output.path, webpackConfig.output.publicPath.replace(/^\./, ""));
-
+			
+			// Gather the list of public environment variables
+			const environmentVariables: PlainObject = {};
+			if (isArray(options.envVars))
+				forEach(options.envVars, key => {
+					if (isUndefined(process.env[key])) environmentVariables[key] = null;
+					else environmentVariables[key] = process.env[key];
+				});
+			if (isString(process.env.PROJECT_ENV)) environmentVariables.PROJECT_ENV = process.env.PROJECT_ENV;
+			
+			// Add additional, dynamic variables if required
+			if (isPlainObject(options.additionalEnvVars))
+				forEach(options.additionalEnvVars, (v, k) => {
+					environmentVariables[k] = v;
+				});
+			
 			// Register the catch all express route
 			context.expressApp.get("*", (req, res) => {
 				if (!renderer) return res.end("Waiting for compilation... Refresh in a moment.");
 				const s = Date.now();
 				res.setHeader("Content-Type", "text/html");
-
+				
 				// Create the rendering stream
-				const vueContext = {url: req.url, serverRequest: req, serverResponse: res};
+				const vueContext = {url: req.url, serverRequest: req, serverResponse: res, env: environmentVariables};
+				if (isFunction(options.vueContextFilter)) options.vueContextFilter(vueContext);
 				const stream = renderer.renderToStream(vueContext);
-
+				
 				// Apply meta data by the "vue-meta" plugin
 				stream.on("data", (chunk: Buffer) => {
-					res.write(applyRendererMetaData(vueContext, applyMetaData(vueContext, chunk.toString("utf-8"))));
+					res.write(
+						options.streamWrapper(
+							applyRendererMetaData(vueContext,
+								applyMetaData(vueContext, chunk.toString("utf-8"))),
+							vueContext
+						)
+					);
 				});
-
+				
 				// End the response when the stream ends
 				stream.on("end", () => {
 					console.log(`Request duration: ${Date.now() - s}ms`);
 					res.end();
 				});
-
+				
 				// Handle errors
 				stream.on("error", err => {
 					// Render Error Page or Redirect
@@ -187,9 +254,17 @@ module.exports = function expressSsrPlugin(context: ExpressContext): Promise<Exp
 					console.error(err);
 				});
 			});
-
+			
 			return Promise.resolve(context);
 		});
-
-
+	
 };
+
+/**
+ * A wrapper to add additional configuration options to the plugin
+ * @param {ExpressSsrPluginOptions} options
+ */
+module.exports.configure = function (options: ExpressSsrPluginOptions): Function {
+	return (context) => module.exports(context, options);
+};
+

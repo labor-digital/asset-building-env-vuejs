@@ -11,7 +11,7 @@ if (process.argv[2] === "development") process.env.NODE_ENV = "development";
 // Create the express asset builder context
 expressAssetBuildingPlugin(app)
 
-// Register your custom routes, those will not reach the expressSsrPlugin!
+	// Register your custom routes, those will not reach the expressSsrPlugin!
 	.then(context => {
 		context.expressApp.get("/test", (req, res) => {
 			res.send("Not served by dev server!");
@@ -25,6 +25,12 @@ expressAssetBuildingPlugin(app)
 
 	// Register the ssr plugin which acts as a wildcard for everything that is not defined above
 	.then(expressSsrPlugin)
+
+	// Optional: register the ssr plugin with additional configuration options
+	// To use the options, call the configure method instead of passing the function through to the promise handler
+	// .then(expressSsrPlugin.configure({
+	// 		envVars: ["MY_VAR"]
+	// }))
 
 	// Create the app
 	.then(context => {
