@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.9.2](https://github.com/labor-digital/asset-building-env-vuejs/compare/v2.9.1...v2.9.2) (2020-02-18)
+
+
+### Bug Fixes
+
+* keep indexTemplate in the output package for the ssr renderer ([45b7042](https://github.com/labor-digital/asset-building-env-vuejs/commit/45b7042ee24c6811d337a801723961c1a9953490))
+
 ### [2.9.1](https://github.com/labor-digital/asset-building-env-vuejs/compare/v2.9.0...v2.9.1) (2020-02-17)
 
 
