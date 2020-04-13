@@ -32,7 +32,7 @@
 	"license": "Apache-2.0",
 	"homepage": "https://bitbucket.org/labor-digital/labor-dev-assetbuilding-env-vuejs#readme",
 	"devDependencies": {
-		"@labor-digital/asset-building": "4.11.0",
+		"@labor-digital/asset-building": "4.11.1",
 		"typescript": "3.8.3"
 	}
 }
