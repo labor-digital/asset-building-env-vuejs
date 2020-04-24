@@ -52,4 +52,12 @@ export interface ExpressSsrPluginOptions {
 	 */
 	streamWrapper?: ExpressSsrPluginStreamWrapperInterface;
 	
+	/**
+	 * Allows you to define the regex that is used to whitelist
+	 * node_module files that can be build by webpack, everything else is directly loaded
+	 * from the node_modules directory on your server.
+	 *
+	 * Default: /\.css$|\.vue$|[\\\/]src[\\\/]|[\\\/]source[\\\/]/
+	 */
+	externalWhitelist?: RegExp;
 }

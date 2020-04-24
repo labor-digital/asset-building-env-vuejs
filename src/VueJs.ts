@@ -25,9 +25,17 @@ import {md5} from "@labor-digital/helferlein/lib/Misc/md5";
 import path from "path";
 import {VueLoaderPlugin} from "vue-loader";
 import merge from "webpack-merge";
+import {VueJsEventList} from "./VueJsEventList";
 
 export default function (context: WorkerContext, scope: string) {
 	if (scope !== "app") throw new Error("The vue extension can not be defined on a global scope!");
+	
+	// Allow filtering of the ssr node-externals whitelist
+	let nodeExternalsWhitelist = /\.css$|\.vue$|[\\\/]src[\\\/]|[\\\/]source[\\\/]/;
+	context.eventEmitter.bind(AssetBuilderEventList.AFTER_WORKER_INIT_DONE, () => {
+		return context.eventEmitter.emitHook(VueJsEventList.SSR_EXTERNAL_WHITELIST_FILTER, {whiteList: nodeExternalsWhitelist})
+			.then(args => nodeExternalsWhitelist = args.whiteList);
+	});
 	
 	// Add our custom configuration
 	context.eventEmitter.bind(AssetBuilderEventList.APPLY_EXTENSION_WEBPACK_CONFIG, (e) => {
@@ -96,7 +104,7 @@ export default function (context: WorkerContext, scope: string) {
 						// do not externalize dependencies that need to be processed by webpack.
 						// you can add more file types here e.g. raw *.vue files
 						// you should also whitelist deps that modifies `global` (e.g. polyfills)
-						whitelist: /\.css$|\.vue$|[\\\/]src[\\\/]|[\\\/]source[\\\/]/
+						whitelist: nodeExternalsWhitelist
 					})),
 					
 					// This is the plugin that turns the entire output of the server build

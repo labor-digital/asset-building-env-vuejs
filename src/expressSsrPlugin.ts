@@ -16,11 +16,12 @@
  * Last modified: 2020.02.18 at 15:09
  */
 
-import ExpressContext from "@labor-digital/asset-building/dist/Express/ExpressContext";
+import ExpressContext from "@labor-digital/asset-building/dist/Interop/Express/ExpressContext";
 import {PlainObject} from "@labor-digital/helferlein/lib/Interfaces/PlainObject";
 import {forEach} from "@labor-digital/helferlein/lib/Lists/forEach";
 import {isArray} from "@labor-digital/helferlein/lib/Types/isArray";
 import {isFunction} from "@labor-digital/helferlein/lib/Types/isFunction";
+import {isObject} from "@labor-digital/helferlein/lib/Types/isObject";
 import {isPlainObject} from "@labor-digital/helferlein/lib/Types/isPlainObject";
 import {isString} from "@labor-digital/helferlein/lib/Types/isString";
 import {isUndefined} from "@labor-digital/helferlein/lib/Types/isUndefined";
@@ -30,6 +31,7 @@ import * as path from "path";
 import {BundleRendererOptions, createBundleRenderer} from "vue-server-renderer";
 import {Configuration} from "webpack";
 import {ExpressSsrPluginOptions} from "./expressSsrPlugin.interfaces";
+import {VueJsEventList} from "./VueJsEventList";
 import MemoryFileSystem = require("memory-fs");
 
 declare global {
@@ -129,6 +131,15 @@ module.exports = function expressSsrPlugin(context: ExpressContext, options?: Ex
 	// Prepare options
 	if (!isPlainObject(options)) options = {};
 	if (!isFunction(options.streamWrapper)) options.streamWrapper = (c) => c;
+	
+	// Register the external whitelist update if configured
+	if (isObject(options.externalWhitelist)) {
+		context.factory.getCoreContext().then(context => {
+			context.eventEmitter.bind(VueJsEventList.SSR_EXTERNAL_WHITELIST_FILTER, (e) => {
+				e.args.whiteList = options.externalWhitelist;
+			}, -500);
+		});
+	}
 	
 	/**
 	 * Internal helper to recreate the bundle renderer instance when webpack rebuilt the defnition

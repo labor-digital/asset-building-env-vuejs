@@ -158,6 +158,13 @@ expressAssetBuildingPlugin(app)
     }));
 ```
 
+### externalWhitelist
+Allows you to define the regex that is used to whitelist
+node_module files that can be build by webpack, everything else is directly loaded
+from the node_modules directory on your server.
+
+Default: /\.css$|\.vue$|[\\\/]src[\\\/]|[\\\/]source[\\\/]/
+
 ## Postcardware
 
 You're free to use this package, but if it makes it to your production environment, we highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using.
