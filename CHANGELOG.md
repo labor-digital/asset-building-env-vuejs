@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.13.0](https://github.com/labor-digital/asset-building-env-vuejs/compare/v2.12.0...v2.13.0) (2020-04-24)
+
+
+### Features
+
+* implement externalWhitelist option for SSR apps ([b544a03](https://github.com/labor-digital/asset-building-env-vuejs/commit/b544a0343014d15e7f6e65068053680ab2b809fc))
+* pretty up package.json + update dependencies ([93b1bda](https://github.com/labor-digital/asset-building-env-vuejs/commit/93b1bdaec9648f0f144acd35734228c2b5315367))
+
+
+### Bug Fixes
+
+* add Arrays.include polyfill to make sure your vue-i18n installation won't break in the latest update ([483ede2](https://github.com/labor-digital/asset-building-env-vuejs/commit/483ede24833b4310658d7e5cddecb8826555368b))
+
 ## [2.12.0](https://github.com/labor-digital/asset-building-env-vuejs/compare/v2.11.0...v2.12.0) (2020-04-13)
 
 
