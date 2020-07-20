@@ -19,12 +19,12 @@
 export enum VueJsEventList {
 	/**
 	 * The hook is emitted on every run, but effectively used only if you are running
-	 * in an SSR environment. It allows you to filter the regex that is used to whitelist
+	 * in an SSR environment. It allows you to filter the regex that is used to allow
 	 * node_module files that can be build by webpack, everything else is directly loaded
 	 * from the node_modules directory on your server
 	 *
 	 * Arguments:
-	 * 	- whiteList: the current regex we should use as whitelist
+	 * 	- allowList: the current regex we should use to find allowed files
 	 */
-	SSR_EXTERNAL_WHITELIST_FILTER = "vueJs__externalWhitelist--filter"
+	SSR_EXTERNAL_ALLOW_LIST_FILTER = "vueJs__externalAllowList--filter"
 }

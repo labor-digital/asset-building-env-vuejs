@@ -132,11 +132,11 @@ module.exports = function expressSsrPlugin(context: ExpressContext, options?: Ex
 	if (!isPlainObject(options)) options = {};
 	if (!isFunction(options.streamWrapper)) options.streamWrapper = (c) => c;
 	
-	// Register the external whitelist update if configured
-	if (isObject(options.externalWhitelist)) {
+	// Register the external allow list update if configured
+	if (isObject(options.externalAllowList)) {
 		context.factory.getCoreContext().then(context => {
-			context.eventEmitter.bind(VueJsEventList.SSR_EXTERNAL_WHITELIST_FILTER, (e) => {
-				e.args.whiteList = options.externalWhitelist;
+			context.eventEmitter.bind(VueJsEventList.SSR_EXTERNAL_ALLOW_LIST_FILTER, (e) => {
+				e.args.allowList = options.externalAllowList;
 			}, -500);
 		});
 	}

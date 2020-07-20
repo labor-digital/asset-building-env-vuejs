@@ -24,17 +24,18 @@ import {AppDefinitionInterface} from "@labor-digital/asset-building/dist/Interfa
 import {md5} from "@labor-digital/helferlein/lib/Misc/md5";
 import path from "path";
 import {VueLoaderPlugin} from "vue-loader";
-import merge from "webpack-merge";
+import {merge} from "webpack-merge";
 import {VueJsEventList} from "./VueJsEventList";
 
 export default function (context: WorkerContext, scope: string) {
-	if (scope !== "app") throw new Error("The vue extension can not be defined on a global scope!");
+	if (scope !== "app") throw new Error("The vue extension cannot be defined on a global scope!");
 	
-	// Allow filtering of the ssr node-externals whitelist
-	let nodeExternalsWhitelist = /\.css$|\.vue$|[\\\/]src[\\\/]|[\\\/]source[\\\/]/;
+	// Filtering of the ssr node-externals allow list
+	let nodeExternalsAllowList = /\.css$|\.vue$|[\\\/]src[\\\/]|[\\\/]source[\\\/]/;
 	context.eventEmitter.bind(AssetBuilderEventList.AFTER_WORKER_INIT_DONE, () => {
-		return context.eventEmitter.emitHook(VueJsEventList.SSR_EXTERNAL_WHITELIST_FILTER, {whiteList: nodeExternalsWhitelist})
-			.then(args => nodeExternalsWhitelist = args.whiteList);
+		return context.eventEmitter.emitHook(VueJsEventList.SSR_EXTERNAL_ALLOW_LIST_FILTER,
+			{allowList: nodeExternalsAllowList})
+			.then(args => nodeExternalsAllowList = args.allowList);
 	});
 	
 	// Add our custom configuration
@@ -103,8 +104,8 @@ export default function (context: WorkerContext, scope: string) {
 					externals: ((require("webpack-node-externals"))({
 						// do not externalize dependencies that need to be processed by webpack.
 						// you can add more file types here e.g. raw *.vue files
-						// you should also whitelist deps that modifies `global` (e.g. polyfills)
-						whitelist: nodeExternalsWhitelist
+						// you should also allow deps that modifies `global` (e.g. polyfills)
+						allowlist: nodeExternalsAllowList
 					})),
 					
 					// This is the plugin that turns the entire output of the server build
