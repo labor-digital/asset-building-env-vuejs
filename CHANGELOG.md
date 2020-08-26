@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.0](https://github.com/labor-digital/asset-building-env-vuejs/compare/v3.0.0...v3.1.0) (2020-08-26)
+
+
+### Features
+
+* update dependencies ([2aeeeeb](https://github.com/labor-digital/asset-building-env-vuejs/commit/2aeeeeb907cccc30cf4f954a0eb8b02e48794af1))
+
 ## [3.0.0](https://github.com/labor-digital/asset-building-env-vuejs/compare/v2.14.0...v3.0.0) (2020-07-20)
 
 
