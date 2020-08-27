@@ -22,6 +22,7 @@ import {ProcessManager} from "@labor-digital/asset-building/dist/Core/ProcessMan
 import {WorkerContext} from "@labor-digital/asset-building/dist/Core/WorkerContext";
 import {AppDefinitionInterface} from "@labor-digital/asset-building/dist/Interfaces/AppDefinitionInterface";
 import {md5} from "@labor-digital/helferlein/lib/Misc/md5";
+import {isPlainObject} from "@labor-digital/helferlein/lib/Types/isPlainObject";
 import path from "path";
 import {VueLoaderPlugin} from "vue-loader";
 import {merge} from "webpack-merge";
@@ -316,7 +317,7 @@ export default function (context: WorkerContext, scope: string) {
 		// Skip if the package requires us to use the css extract plugin
 		if (context.app.useCssExtractPlugin === true) return;
 		
-		const cssLoaderRegex = /css-loader/;
+		const cssLoaderRegex = /^css-loader/;
 		
 		// Rewrite sass loader
 		if (e.args.identifier === AssetBuilderConfiguratorIdentifiers.SASS_LOADER) {
@@ -326,7 +327,7 @@ export default function (context: WorkerContext, scope: string) {
 				
 				// Update css-loader options
 				// @see https://github.com/vuejs/vue-style-loader/issues/46#issuecomment-670624576
-				if (v.loader.match(cssLoaderRegex)) {
+				if (v.loader.match(cssLoaderRegex) && isPlainObject(e.args.config.use[k].options)) {
 					e.args.config.use[k].options.esModule = false;
 				}
 				
@@ -345,7 +346,7 @@ export default function (context: WorkerContext, scope: string) {
 				
 				// Update css-loader options
 				// @see https://github.com/vuejs/vue-style-loader/issues/46#issuecomment-670624576
-				if (v.loader.match(cssLoaderRegex)) {
+				if (v.loader.match(cssLoaderRegex) && isPlainObject(e.args.config.use[k].options)) {
 					e.args.config.use[k].options.esModule = false;
 				}
 				
