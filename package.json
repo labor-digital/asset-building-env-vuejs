@@ -45,7 +45,7 @@
 	"license": "Apache-2.0",
 	"homepage": "https://github.com/labor-digital/asset-building-env-vuejs",
 	"devDependencies": {
-		"@labor-digital/asset-building": "5.0.1",
+		"@labor-digital/asset-building": "6.0.0",
 		"typescript": "4.0.2"
 	},
 	"keywords": [

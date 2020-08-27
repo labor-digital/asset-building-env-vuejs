@@ -3,3 +3,5 @@ node_modules
 !.keep
 dist
 
+demo/package-lock.json
+demo-ssr/package-lock.json

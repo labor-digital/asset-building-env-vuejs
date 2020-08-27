@@ -316,11 +316,19 @@ export default function (context: WorkerContext, scope: string) {
 		// Skip if the package requires us to use the css extract plugin
 		if (context.app.useCssExtractPlugin === true) return;
 		
+		const cssLoaderRegex = /css-loader/;
+		
 		// Rewrite sass loader
 		if (e.args.identifier === AssetBuilderConfiguratorIdentifiers.SASS_LOADER) {
 			e.args.config.use.forEach((v, k) => {
 				if (typeof v === "string") v = {loader: v};
 				if (typeof v.loader === "undefined") return;
+				
+				// Update css-loader options
+				// @see https://github.com/vuejs/vue-style-loader/issues/46#issuecomment-670624576
+				if (v.loader.match(cssLoaderRegex)) {
+					e.args.config.use[k].options.esModule = false;
+				}
 				
 				// Inject vue style loader
 				if (v.loader.match(cssExtractorPluginRegex)) {
@@ -334,6 +342,12 @@ export default function (context: WorkerContext, scope: string) {
 			e.args.config.use.forEach((v, k) => {
 				if (typeof v === "string") v = {loader: v};
 				if (typeof v.loader === "undefined") return;
+				
+				// Update css-loader options
+				// @see https://github.com/vuejs/vue-style-loader/issues/46#issuecomment-670624576
+				if (v.loader.match(cssLoaderRegex)) {
+					e.args.config.use[k].options.esModule = false;
+				}
 				
 				// Inject vue style loader
 				if (v.loader.match(cssExtractorPluginRegex))

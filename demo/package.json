@@ -8,7 +8,7 @@
 		"link": "npm link @labor-digital/asset-building @labor-digital/asset-building-env-vuejs"
 	},
 	"devDependencies": {
-		"@labor-digital/asset-building": "^4.9.2",
+		"@labor-digital/asset-building": "^6.0.0",
 		"@labor-digital/asset-building-env-vuejs": "*"
 	},
 	"labor": {
