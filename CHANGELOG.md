@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.1.1](https://github.com/labor-digital/asset-building-env-vuejs/compare/v3.1.0...v3.1.1) (2020-08-27)
+
+
+### Bug Fixes
+
+* resolve issues where vue-style-loader could not build styles with css-loader v4.0 ([47a4b86](https://github.com/labor-digital/asset-building-env-vuejs/commit/47a4b862882e939197ec0b2a33aed920ac65e0a2))
+
 ## [3.1.0](https://github.com/labor-digital/asset-building-env-vuejs/compare/v3.0.0...v3.1.0) (2020-08-26)
 
 
