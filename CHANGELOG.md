@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.1.2](https://github.com/labor-digital/asset-building-env-vuejs/compare/v3.1.1...v3.1.2) (2020-08-27)
+
+
+### Bug Fixes
+
+* make sure the post css-loader does not crash the builder ([9542abb](https://github.com/labor-digital/asset-building-env-vuejs/commit/9542abbad0e87e9cf695c565f10336de95361d19))
+
 ### [3.1.1](https://github.com/labor-digital/asset-building-env-vuejs/compare/v3.1.0...v3.1.1) (2020-08-27)
 
 
