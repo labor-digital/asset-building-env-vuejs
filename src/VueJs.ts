@@ -166,7 +166,7 @@ export default function (context: WorkerContext, scope: string) {
 		const context: WorkerContext = e.args.context;
 		
 		// Ignore if we are not running in express mode
-		if (!context.parentContext.isExpress) return;
+		if (context.parentContext.environment !== "express") return;
 		if (context.app.ssrWorker !== "server" || typeof context.webpackConfig.output.path !== "string") return;
 		
 		// Set the compiler to the memory fs
@@ -224,7 +224,7 @@ export default function (context: WorkerContext, scope: string) {
 		
 		// Ignore if the context is not correct
 		if (typeof context.app.ssrWorker !== "undefined") return;
-		if (context.parentContext.isExpress && context.parentContext.isProd) return;
+		if (context.parentContext.environment === "express" && context.parentContext.isProd) return;
 		
 		// Create our process manager
 		const processManager = new ProcessManager(context.eventEmitter);
