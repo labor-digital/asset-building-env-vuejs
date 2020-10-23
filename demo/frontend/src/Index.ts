@@ -1,5 +1,6 @@
-import Vue from "vue";
+// @ts-ignore
 import Main from "Main.vue";
+import Vue from "vue";
 
 new Vue({
 	el: "#app",
