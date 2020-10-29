@@ -50,11 +50,11 @@ export class SsrPluginHandler {
 	
 	public handle(): Promise<ExpressContext> {
 		return this.registerGlobalRendererUpdate()
+			.then(() => this.registerAssetRoute())
 			.then(() => this.registerContentRoute())
 			.then(() => this.initializeWorkerContext())
 			.then(() => this.setUpGeneratorConfig())
 			.then(() => this.initializeConfiguration())
-			.then(() => this.registerAssetRoute())
 			.then(() => this.initializeProductionRenderer())
 			.then(() => this._context);
 	}
