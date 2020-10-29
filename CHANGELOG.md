@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.0.1](https://github.com/labor-digital/asset-building-env-vuejs/compare/v4.0.0...v4.0.1) (2020-10-29)
+
+
+### Bug Fixes
+
+* **SsrPluginHandler:** serve asset route before content catch-all route ([8f9d4f5](https://github.com/labor-digital/asset-building-env-vuejs/commit/8f9d4f5ca100dd36bd78697b049129021dde3dcf))
+
 ## [4.0.0](https://github.com/labor-digital/asset-building-env-vuejs/compare/v3.1.2...v4.0.0) (2020-10-23)
 
 
