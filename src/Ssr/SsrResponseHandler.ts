@@ -46,7 +46,8 @@ export class SsrResponseHandler {
 			url: req.url,
 			serverRequest: req,
 			serverResponse: res,
-			env: this._pluginHandler.environmentVariables
+			env: this._pluginHandler.environmentVariables,
+			afterRendering: null
 		};
 		if (isFunction(this._pluginHandler.options.vueContextFilter)) {
 			this._pluginHandler.options.vueContextFilter(vueContext);
@@ -71,8 +72,16 @@ export class SsrResponseHandler {
 		
 		// End the response when the stream ends
 		stream.on("end", () => {
-			console.log(`Request duration: ${Date.now() - s}ms`);
-			res.end();
+			const cb = function () {
+				console.log(`Request duration: ${Date.now() - s}ms`);
+				res.end();
+			};
+			
+			if (isFunction(vueContext.afterRendering)) {
+				vueContext.afterRendering(res).then(cb);
+			} else {
+				cb();
+			}
 		});
 		
 		// Handle errors
