@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.1.0](https://github.com/labor-digital/asset-building-env-vuejs/compare/v4.0.2...v4.1.0) (2021-01-22)
+
+
+### Features
+
+* **SsrResponseHandler:** implement "afterRendering" hook ([49d571a](https://github.com/labor-digital/asset-building-env-vuejs/commit/49d571a48a0cd9eebd880bf44d31c6abb8229e08))
+* update dependencies ([a6b64c8](https://github.com/labor-digital/asset-building-env-vuejs/commit/a6b64c87f52578a018c4237857a4423bc9374b50))
+
 ### [4.0.2](https://github.com/labor-digital/asset-building-env-vuejs/compare/v4.0.1...v4.0.2) (2020-10-29)
 
 
