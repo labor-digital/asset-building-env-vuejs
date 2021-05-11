@@ -4,7 +4,9 @@
 	"description": "A demoproject to show how the buildprocess works",
 	"scripts": {
 		"build": "labor-asset-building build",
-		"watch": "labor-asset-building watch"
+		"watch": "labor-asset-building watch",
+		"dev": "node server.js development",
+		"prod": "node server.js"
 	},
 	"devDependencies": {
 		"@labor-digital/asset-building": "^4.9.2",
