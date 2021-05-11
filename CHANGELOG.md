@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.2.0](https://github.com/labor-digital/asset-building-env-vuejs/compare/v4.1.1...v4.2.0) (2021-05-11)
+
+
+### Features
+
+* **ssr:** use renderToString instead of renderToStream ([870ae5f](https://github.com/labor-digital/asset-building-env-vuejs/commit/870ae5f6097f73ba082b6eef95314f763c603865))
+* update dependencies ([9b63645](https://github.com/labor-digital/asset-building-env-vuejs/commit/9b63645f8663351fedb9262c7a00ae8b2a9dc28d))
+
 ### [4.1.1](https://github.com/labor-digital/asset-building-env-vuejs/compare/v4.1.0...v4.1.1) (2021-03-15)
 
 ## [4.1.0](https://github.com/labor-digital/asset-building-env-vuejs/compare/v4.0.2...v4.1.0) (2021-01-22)
