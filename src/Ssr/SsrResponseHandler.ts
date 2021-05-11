@@ -33,7 +33,7 @@ export class SsrResponseHandler {
 	 * @param req
 	 * @param res
 	 */
-	public handle(req: Request, res: Response) {
+	public async handle(req: Request, res: Response): Promise<void> {
 		if (!this.hasRenderer) {
 			return res.end("Waiting for compilation... Refresh in a moment.");
 		}
@@ -41,56 +41,50 @@ export class SsrResponseHandler {
 		const s = Date.now();
 		res.setHeader("Content-Type", "text/html");
 		
+		const options = this._pluginHandler.options ?? {};
+		
 		// Create the rendering stream
 		const vueContext = {
 			url: req.url,
 			serverRequest: req,
 			serverResponse: res,
 			env: this._pluginHandler.environmentVariables,
-			afterRendering: null
+			afterRendering: ((() => {
+			}) as any)
 		};
-		if (isFunction(this._pluginHandler.options.vueContextFilter)) {
-			this._pluginHandler.options.vueContextFilter(vueContext);
+		
+		if (isFunction(options.vueContextFilter)) {
+			options.vueContextFilter(vueContext);
 		}
-		const stream = this.renderer.renderToStream(vueContext);
 		
-		// Apply meta data by the "vue-meta" plugin
-		stream.on("data", (chunk: Buffer) => {
-			res.write(
-				this._pluginHandler.options.streamWrapper(
-					this.applyRendererMetaData(
-						vueContext,
-						this.applyMetaData(
-							vueContext,
-							chunk.toString("utf-8")
-						)
-					),
-					vueContext
-				)
-			);
-		});
-		
-		// End the response when the stream ends
-		stream.on("end", () => {
-			const cb = function () {
-				console.log(`Request duration: ${Date.now() - s}ms`);
-				res.end();
-			};
+		try {
+			let result = await this.renderer.renderToString(vueContext);
+			
+			result = this.applyMetaData(vueContext, result);
+			result = this.applyRendererMetaData(vueContext, result);
+			
+			res.write(result);
 			
 			if (isFunction(vueContext.afterRendering)) {
-				vueContext.afterRendering(res).then(cb);
-			} else {
-				cb();
+				await vueContext.afterRendering(res, req, vueContext);
 			}
-		});
-		
-		// Handle errors
-		stream.on("error", err => {
-			// Render Error Page or Redirect
+			
+			console.log(`Request duration: ${Date.now() - s}ms`);
+			
+			res.end();
+			
+		} catch (e) {
 			res.status(500).end("500 | Internal Server Error");
-			console.error(`Error during render : ${req.url}`);
-			console.error(err);
-		});
+			
+			if (!this._pluginHandler.isDev) {
+				// Make the error conform to log collectors
+				console.error(`Error during render : ${req.url} | ${e}`.replace(/[\r\n]/g, " -> "));
+			} else {
+				console.log(`Request duration: ${Date.now() - s}ms`);
+				console.error(`Error during render : ${req.url}`);
+				console.error(e);
+			}
+		}
 	}
 	
 	/**
@@ -102,7 +96,6 @@ export class SsrResponseHandler {
 			this._pluginHandler.renderer;
 			return true;
 		} catch (e) {
-			console.log(e);
 			return false;
 		}
 	}
@@ -129,7 +122,18 @@ export class SsrResponseHandler {
 			if (!that._pluginHandler.isDev) {
 				return "";
 			}
-			return vueContext.renderScripts() + " " + vueContext.renderState();
+			
+			let result = "";
+			
+			if (isFunction(vueContext.renderScripts)) {
+				result += vueContext.renderScripts() + " ";
+			}
+			
+			if (isFunction(vueContext.renderState)) {
+				result += vueContext.renderState() + " ";
+			}
+			
+			return result;
 		});
 		return chunk;
 	}
