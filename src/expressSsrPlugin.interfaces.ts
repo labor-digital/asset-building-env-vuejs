@@ -16,6 +16,7 @@
  * Last modified: 2020.02.18 at 15:10
  */
 
+import {IExpressRegisterPublicAssetsOptions} from "@labor-digital/asset-building/dist/Express/types";
 import {PlainObject} from "@labor-digital/helferlein/lib/Interfaces/PlainObject";
 
 export interface ExpressSsrPluginStreamWrapperInterface {
@@ -60,4 +61,9 @@ export interface ExpressSsrPluginOptions {
 	 * Default: /\.css$|\.vue$|[\\\/]src[\\\/]|[\\\/]source[\\\/]/
 	 */
 	externalAllowList?: RegExp;
+	
+	/**
+	 * Configuration options to be applied to the asset route serving the webpack resources
+	 */
+	assetRoute?: IExpressRegisterPublicAssetsOptions
 }

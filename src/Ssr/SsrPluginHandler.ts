@@ -239,7 +239,10 @@ export class SsrPluginHandler {
 	 * @protected
 	 */
 	protected registerAssetRoute(): Promise<this> {
-		this._context.registerPublicAssets(this._config.output.path, this._config.output.publicPath.replace(/^\./, ""));
+		this._context.registerPublicAssets(
+			this._config.output.path, this._config.output.publicPath.replace(/^\./, ""),
+			this._options.assetRoute
+		);
 		return Promise.resolve(this);
 	}
 	
