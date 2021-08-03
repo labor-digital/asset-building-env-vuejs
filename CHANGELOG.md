@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.3.0](https://github.com/labor-digital/asset-building-env-vuejs/compare/v4.2.0...v4.3.0) (2021-08-03)
+
+
+### Features
+
+* **expressSsrPlugin:** implement support for asset route options ([51d712e](https://github.com/labor-digital/asset-building-env-vuejs/commit/51d712e9262659aa334f969b03e779f7ddbf2cca))
+
 ## [4.2.0](https://github.com/labor-digital/asset-building-env-vuejs/compare/v4.1.1...v4.2.0) (2021-05-11)
 
 
