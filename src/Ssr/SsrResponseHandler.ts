@@ -63,15 +63,17 @@ export class SsrResponseHandler {
 			result = this.applyMetaData(vueContext, result);
 			result = this.applyRendererMetaData(vueContext, result);
 			
-			res.write(result);
-			
-			if (isFunction(vueContext.afterRendering)) {
-				await vueContext.afterRendering(res, req, vueContext);
+                	if ([301,302,307].indexOf(res.statusCode) === -1) {
+				res.write(result);
+
+				if (isFunction(vueContext.afterRendering)) {
+					await vueContext.afterRendering(res, req, vueContext);
+				}
+
+				console.log(`Request duration: ${Date.now() - s}ms`);
+
+				res.end();
 			}
-			
-			console.log(`Request duration: ${Date.now() - s}ms`);
-			
-			res.end();
 			
 		} catch (e) {
 			res.status(500).end("500 | Internal Server Error");
